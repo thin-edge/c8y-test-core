@@ -43,22 +43,24 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
         Returns:
             A new CumulocityApp instance
         """
-        baseurl = self._get_env("C8Y_BASEURL")
+        baseurl = os.getenv("C8Y_BASEURL", "")
 
-        username = self._get_env("C8Y_USER")
+        username = os.getenv("C8Y_USER", "")
 
         tenant_id = ""
         if "C8Y_TENANT" in os.environ:
-            tenant_id = self._get_env("C8Y_TENANT")
+            tenant_id = os.getenv("C8Y_TENANT", "")
 
         if "C8Y_PASSWORD" in os.environ:
-            password = self._get_env("C8Y_PASSWORD")
+            password = os.getenv("C8Y_PASSWORD", "")
             auth = HTTPBasicAuth(username, password)
         elif "C8Y_TOKEN" in os.environ:
-            token = self._get_env("C8Y_TOKEN")
+            token = self._get_env("C8Y_TOKEN", "")
             auth = HTTPBearerAuth(token)
         else:
-            raise Exception("Unknown authorization")
+            pass
+            # Don't raise as it prevent the library from being imported
+            # raise Exception("Unknown authorization")
 
         super().__init__(
             log=self.log,
