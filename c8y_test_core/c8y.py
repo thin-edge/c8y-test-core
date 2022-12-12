@@ -51,6 +51,7 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
         if "C8Y_TENANT" in os.environ:
             tenant_id = os.getenv("C8Y_TENANT", "")
 
+        auth = ""
         if "C8Y_PASSWORD" in os.environ:
             password = os.getenv("C8Y_PASSWORD", "")
             auth = HTTPBasicAuth(username, password)
