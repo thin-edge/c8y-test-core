@@ -2,12 +2,11 @@
 from __future__ import annotations
 
 import base64
-import random
 import re
 from typing import List, Set, Any
 from unittest.mock import Mock
 
-from requests import request
+import randomname
 
 from c8y_api.model._base import CumulocityObject
 
@@ -72,29 +71,13 @@ def random_name() -> str:
     return RandomNameGenerator.random_name()
 
 
-def read_webcontent(source_url, target_path):
-    """Read web content to a local file."""
-    response = request("get", source_url)
-    if 200 <= response.status_code <= 299:
-        with open(target_path, "wt", encoding="utf-8") as file:
-            file.write(response.text)
-    else:
-        raise RuntimeError(
-            "Unable to read web content. Unexpected response from web site: "
-            f"HTTP {response.status_code} {response.text}"
-        )
-
-
 class RandomNameGenerator:
     """Provides randomly generated names using a public service."""
 
     # pylint: disable=too-few-public-methods
 
     wordlist_path = "wordlist.txt"
-    read_webcontent(
-        "https://raw.githubusercontent.com/mike-hearn/useapassphrase/master/js/wordlist.js",
-        wordlist_path,
-    )
+
     with open(wordlist_path, "rt", encoding="utf-8") as file:
         file.readline()  # skip first line
         lines = file.readlines()
@@ -109,8 +92,25 @@ class RandomNameGenerator:
         Returns:
             The generated name
         """
-        words = [random.choice(cls.words) for _ in range(0, num)]
-        return sep.join(words)
+        groups = []
+        if num <= 1:
+            # only a noun
+            groups.append("n/")
+        elif num == 2:
+            # adjective + noun
+            groups.append("a/")
+            groups.append("n/")
+        else:
+            # one verb
+            groups.append("v/")
+
+            # use adjectives inbetween
+            groups.extend(["a/"] * (num - 2))
+
+            # then one noun
+            groups.append("n/")
+
+        return randomname.generate(*groups, sep=sep)
 
 
 def b64encode(auth_string: str) -> str:
