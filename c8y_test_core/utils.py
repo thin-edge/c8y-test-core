@@ -76,13 +76,6 @@ class RandomNameGenerator:
 
     # pylint: disable=too-few-public-methods
 
-    wordlist_path = "wordlist.txt"
-
-    with open(wordlist_path, "rt", encoding="utf-8") as file:
-        file.readline()  # skip first line
-        lines = file.readlines()
-    words = [re.sub("[^\\w]", "", line) for line in lines]
-
     @classmethod
     def random_name(cls, num: int = 3, sep: str = "_") -> str:
         """Generate a readable random name from joined random words.
