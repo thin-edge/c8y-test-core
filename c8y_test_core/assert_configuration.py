@@ -118,12 +118,17 @@ class DeviceConfiguration(AssertDevice):
             missing = [
                 typename for typename in types if typename not in supported_configs
             ]
-            assert (
-                not missing
-            ), f"Supported Configuration fragment ({SUPPORTED_CONFIGURATIONS}) is missing some types. missing: {missing}, got: {supported_configs}"
+            assert not missing, (
+                f"Supported Configuration fragment ({SUPPORTED_CONFIGURATIONS}) is missing some types."
+                f"\nmissing: {missing}"
+                f"\ngot: {supported_configs}"
+            )
         else:
-            assert sorted(supported_configs) == sorted(
-                types
-            ), f"Supported Configuration fragment ({SUPPORTED_CONFIGURATIONS}) does not match. wanted: {types}, got: {supported_configs}"
+
+            assert sorted(supported_configs) == sorted(types), (
+                f"Supported Configuration fragment ({SUPPORTED_CONFIGURATIONS}) does not match."
+                f"\nwanted: {sorted(types)}"
+                f"\ngot: {sorted(supported_configs)}"
+            )
 
         return supported_configs
