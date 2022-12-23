@@ -1,10 +1,14 @@
 """Device configuration assertions"""
-from c8y_api.model import Operation
+from typing import List
+from c8y_api.model import Operation, ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_binaries import Binaries
 from c8y_test_core.models import Configuration
 from c8y_test_core.assert_operation import AssertOperation
 from c8y_test_core.utils import RandomNameGenerator
+
+
+SUPPORTED_CONFIGURATIONS = "c8y_SupportedConfigurations"
 
 
 class DeviceConfiguration(AssertDevice):
@@ -79,3 +83,47 @@ class DeviceConfiguration(AssertDevice):
             **kwargs,
         }
         return self._execute(**fragments)
+
+    def assert_supported_types(
+        self,
+        types: List[str],
+        includes: bool = False,
+        mo: ManagedObject = None,
+        **kwargs,
+    ) -> List[str]:
+        """Assert that the managed object has supported configuration
+
+        Args:
+            types (List[str]): List of expected configuration types
+            includes (boolean, optional): Only check if the list includes the given types. It only
+                checks if the given types are there and does not care about additional types.
+                Defaults to False
+
+            mo (ManagedObject, optional): Managed object to use in comparison. Defaults to the current
+                context.
+
+        Returns:
+            List[str]: List of the configuration types on the managed object
+        """
+        if mo is None:
+            mo = self.context.client.inventory.get(self.context.device_id)
+
+        mo_json = mo.to_json()
+        assert (
+            SUPPORTED_CONFIGURATIONS in mo_json
+        ), f"Supported configuration fragment is missing {SUPPORTED_CONFIGURATIONS} from managed object"
+        supported_configs = mo_json.get(SUPPORTED_CONFIGURATIONS, [])
+
+        if includes:
+            missing = [
+                typename for typename in types if typename not in supported_configs
+            ]
+            assert (
+                not missing
+            ), f"Supported Configuration fragment ({SUPPORTED_CONFIGURATIONS}) is missing some types. missing: {missing}, got: {supported_configs}"
+        else:
+            assert sorted(supported_configs) == sorted(
+                types
+            ), f"Supported Configuration fragment ({SUPPORTED_CONFIGURATIONS}) does not match. wanted: {missing}, got: {supported_configs}"
+
+        return supported_configs
