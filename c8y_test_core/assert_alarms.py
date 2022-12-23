@@ -44,13 +44,17 @@ class Alarms(AssertDevice):
 
         assert len(matching_alarms) >= min_matches, (
             "Alarm count is less than expected. "
-            f"wanted={min_matches} (min), got={len(matching_alarms)}"
+            f"wanted={min_matches} (min)\n"
+            f"got={len(matching_alarms)}\n\n"
+            f"alarms:\n{matching_alarms}"
         )
 
         if max_matches is not None:
             assert len(matching_alarms) <= max_matches, (
                 "Alarm count is more than expected. "
-                f"wanted={max_matches} (max), got={len(matching_alarms)}"
+                f"wanted={max_matches} (max)\n"
+                f"got={len(matching_alarms)}\n\n"
+                f"alarms:\n{matching_alarms}"
             )
 
         return matching_alarms
