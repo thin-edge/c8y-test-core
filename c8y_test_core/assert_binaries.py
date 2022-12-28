@@ -28,10 +28,11 @@ class Binaries(AssertDevice):
         binary_type: str = "",
         file: str = None,
         contents: str = None,
+        delete: bool = True,
         **kwargs
     ):
         """Upload a binary and provide it to a context. The binary will be automatically
-        deleted one it is done.
+        deleted one it is done. Though binary can be kept by setting the delete=False option.
 
         with new_binary("myfile", file="./somefile.txt") as ref:
             print(ref.url)
@@ -67,5 +68,6 @@ class Binaries(AssertDevice):
                 # and even if it did, it is the internal address and not the public domain one
                 yield BinaryReference(binary=binary, url=binary_url)
             finally:
-                with contextlib.suppress(Exception):
-                    binary.delete()
+                if delete:
+                    with contextlib.suppress(Exception):
+                        binary.delete()
