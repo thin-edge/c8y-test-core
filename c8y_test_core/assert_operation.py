@@ -107,6 +107,25 @@ class AssertOperation:
         )
         return self.operation
 
+    def assert_delivered(self, **kwargs) -> Operation:
+        """Assert that the operation was delivered (only supported if the agent
+        is communicating via MQTT.
+        """
+        self.fetch_operation()
+
+        props = self.operation.to_json()
+
+        assert (
+            "delivery" in props
+        ), f"Expected operation (id={self.operation.id}) to contain the delivery fragment"
+
+        delivery_status = props["delivery"].get("status", "")
+        assert delivery_status == "DELIVERED", (
+            f"Expected operation (id={self.operation.id}) to be DELIEVERED, "
+            f"but got: {delivery_status}"
+        )
+        return self.operation
+
     def create(self, device_id: str, **kwargs):
         """Create an operation"""
         return AssertOperation(
