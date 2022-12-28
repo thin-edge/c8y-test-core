@@ -79,7 +79,9 @@ class DeviceConfiguration(AssertDevice):
         config_type = configuration.__dict__.get("type", "")
         fragments = {
             "description": f"Retrieve {config_type} configuration snapshot from device",
-            "c8y_UploadConfigFile": configuration.__dict__,
+            "c8y_UploadConfigFile": {
+                "type": config_type,
+            },
             **kwargs,
         }
         return self._execute(**fragments)
