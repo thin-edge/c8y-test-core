@@ -8,7 +8,6 @@ from tenacity import (
     retry,
     retry_if_exception_type,
     retry_if_not_exception_type,
-    stop_after_attempt,
     stop_after_delay,
     wait_fixed,
 )
@@ -16,8 +15,8 @@ from tenacity import (
 
 def configure_retry(obj: object, func_name: str, **kwargs):
     """Configure retry mechanism to a function"""
-    wait = kwargs.get("wait", 2)
-    timeout = kwargs.get("timeout", 30)
+    wait = float(kwargs.get("wait", 2))
+    timeout = float(kwargs.get("timeout", 30))
 
     decorator = retry(
         retry=retry_if_exception_type(AssertionError),
@@ -48,8 +47,8 @@ def configure_retry_on_members(obj: object, pattern: str, **kwargs):
 def retrier(func, *args, **kwargs):
     attempt = None
     try:
-        wait = kwargs.get("wait", 2)
-        timeout = kwargs.get("timeout", 30)
+        wait = float(kwargs.get("wait", 2))
+        timeout = float(kwargs.get("timeout", 30))
 
         for attempt in Retrying(
             retry=(
