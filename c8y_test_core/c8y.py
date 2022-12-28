@@ -45,6 +45,13 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
         """
         baseurl = os.getenv("C8Y_BASEURL", "")
 
+        # Default to https
+        if not (baseurl.startswith("https://") or baseurl.startswith("http://")):
+            baseurl = f"https://{baseurl}"
+
+        # Normalize url
+        baseurl = baseurl.rstrip("/")
+
         username = os.getenv("C8Y_USER", "")
 
         tenant_id = ""
