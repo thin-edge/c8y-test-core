@@ -126,7 +126,6 @@ class DeviceConfiguration(AssertDevice):
                 f"\ngot: {supported_configs}"
             )
         else:
-
             assert sorted(supported_configs) == sorted(types), (
                 f"Supported Configuration fragment ({SUPPORTED_CONFIGURATIONS}) does not match."
                 f"\nwanted: {sorted(types)}"
