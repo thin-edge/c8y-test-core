@@ -29,7 +29,7 @@ class Binaries(AssertDevice):
         file: str = None,
         contents: str = None,
         delete: bool = True,
-        **kwargs
+        **kwargs,
     ):
         """Upload a binary and provide it to a context. The binary will be automatically
         deleted one it is done. Though binary can be kept by setting the delete=False option.
@@ -52,7 +52,7 @@ class Binaries(AssertDevice):
                 type=binary_type,
                 name=name,
                 file=str(file),
-                **kwargs
+                **kwargs,
             ).create()
 
             binary_url = "/".join(
