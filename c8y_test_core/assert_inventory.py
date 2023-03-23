@@ -210,3 +210,107 @@ class AssertInventory(AssertDevice):
         except Exception as ex:
             log.error("Could not delete device. %s", ex)
             raise
+
+    def get_services(
+        self,
+        inventory_id,
+        service_type: str = None,
+        status: str = None,
+        name: str = None,
+        query: str = None,
+        page_size: int = 100,
+    ) -> List[Dict]:
+        """Get services attached to a specific device
+
+        Args:
+            inventory_id (str, optional): managed object to check if it exists. If None
+                then the device_id in the context will be used.
+            min_count (int, optional): Minimum number of service matches (inclusive)
+            max_count (int, optional): Maximum number of service matches (inclusive)
+            service_type (str, optional): Filter by service type
+            name (str, optional): Filter by service name
+            status (str, optional): Filter by service status
+            query (str, optional): Use custom inventory query language
+            page_size (int, optional): Maximum number of page results to return
+
+        Returns:
+            List[ManagedObject]: List of services
+        """
+        query_parts = ["(type eq 'c8y_Service')"]
+
+        if service_type:
+            query_parts.append(f"(serviceType eq '{service_type}')")
+
+        if status:
+            query_parts.append(f"(status eq '{status}')")
+
+        if name:
+            query_parts.append(f"(name eq '{name}')")
+
+        if query:
+            query_parts.append(query)
+
+        query_str = "$filter=" + " and ".join(query_parts)
+
+        try:
+            url = (
+                self.context.client.inventory.build_object_path(inventory_id)
+                + "/childAdditions"
+            )
+            response = self.context.client.get(
+                url,
+                params={
+                    "query": query_str,
+                    "pageSize": page_size,
+                },
+            )
+            children = response.get("references")
+            return children
+        except KeyError as ex:
+            # 404 errors
+            raise InventoryNotFound from ex
+
+    def assert_services(
+        self,
+        inventory_id: str = None,
+        min_count: int = 1,
+        max_count: int = None,
+        service_type: str = None,
+        status: str = None,
+        name: str = None,
+        **kwargs,
+    ) -> List[ManagedObject]:
+        """Assert services attached to a specific device
+
+        Args:
+            inventory_id (str, optional): managed object to check if it exists. If None
+                then the device_id in the context will be used.
+            min_count (int, optional): Minimum number of service matches (inclusive)
+            max_count (int, optional): Maximum number of service matches (inclusive)
+            service_type (str, optional): Filter by service type
+            name (str, optional): Filter by service name
+            status (str, optional): Filter by service status
+
+        Returns:
+            List[ManagedObject]: List of services
+        """
+        if inventory_id is None:
+            inventory_id = self.context.device_id
+        services = (
+            self.get_services(
+                inventory_id, service_type=service_type, status=status, name=name
+            )
+            or []
+        )
+
+        if min_count is not None:
+            assert (
+                len(services) >= min_count
+            ), f"Expected total device services count to be greater than or equal to {min_count}"
+
+        if max_count is not None:
+            assert (
+                len(services) <= max_count
+            ), f"Expected total device services count to be less than or equal to {max_count}"
+
+        return services
