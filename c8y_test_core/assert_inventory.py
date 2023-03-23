@@ -219,7 +219,7 @@ class AssertInventory(AssertDevice):
         name: str = None,
         query: str = None,
         page_size: int = 100,
-    ) -> List[Dict]:
+    ) -> List[ManagedObject]:
         """Get services attached to a specific device
 
         Args:
@@ -264,7 +264,7 @@ class AssertInventory(AssertDevice):
                     "pageSize": page_size,
                 },
             )
-            children = [ref["managedObject"] for ref in response.get("references")]
+            children = [ManagedObject.from_json(ref["managedObject"]) for ref in response.get("references")]
             return children
         except KeyError as ex:
             # 404 errors
