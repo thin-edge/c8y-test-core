@@ -63,7 +63,7 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
             password = os.getenv("C8Y_PASSWORD", "")
             auth = HTTPBasicAuth(username, password)
         elif "C8Y_TOKEN" in os.environ:
-            token = self._get_env("C8Y_TOKEN", "")
+            token = os.getenv("C8Y_TOKEN", "")
             auth = HTTPBearerAuth(token)
         else:
             pass
