@@ -121,7 +121,7 @@ class SoftwareManagement(AssertDevice):
 
         # return a dictionary where the key is the package name
         # so it is easier for users to inspect individual packages
-        installed_with_keys = {[pkg["name"]]: pkg for pkg in mo["c8y_SoftwareList"]}
+        installed_with_keys = {pkg["name"]: pkg for pkg in mo["c8y_SoftwareList"]}
         return installed_with_keys
 
     def assert_not_software_installed(
