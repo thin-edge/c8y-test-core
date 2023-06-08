@@ -1,12 +1,17 @@
 """Software management"""
 import dataclasses
 import re
+from typing import Dict, Any
 
 from c8y_api.model import ManagedObject
 
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_operation import AssertOperation
 from c8y_test_core.models import Software
+
+
+_package_name = str
+_package = Dict[str, Any]
 
 
 class SoftwareManagement(AssertDevice):
@@ -70,9 +75,14 @@ class SoftwareManagement(AssertDevice):
 
     def assert_software_installed(
         self, *expected_software_list: Software, mo: ManagedObject = None, **kwargs
-    ):
+    ) -> Dict[_package_name, Dict[str, _package]]:
         """Assert that a list of software packages are installed.
         If the version is empty, then version matching is skipped.
+
+        Returns:
+            Dict[_package_name, Dict[str, _package]]: A dictionary with all of the
+                packages making it easier to check the contents of the packages
+                by referencing individual packages by the package name.
         """
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
@@ -108,6 +118,11 @@ class SoftwareManagement(AssertDevice):
             "Software not installed. "
             f"errors={errors}, wanted={expected_software_list}, got={mo['c8y_SoftwareList']}"
         )
+
+        # return a dictionary where the key is the package name
+        # so it is easier for users to inspect individual packages
+        installed_with_keys = {[pkg["name"]]: pkg for pkg in mo["c8y_SoftwareList"]}
+        return installed_with_keys
 
     def assert_not_software_installed(
         self, *unexpected_software_list: Software, mo: ManagedObject = None, **kwargs
