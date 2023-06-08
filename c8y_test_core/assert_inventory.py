@@ -264,7 +264,10 @@ class AssertInventory(AssertDevice):
                     "pageSize": page_size,
                 },
             )
-            children = [ManagedObject.from_json(ref["managedObject"]) for ref in response.get("references")]
+            children = [
+                ManagedObject.from_json(ref["managedObject"])
+                for ref in response.get("references")
+            ]
             return children
         except KeyError as ex:
             # 404 errors
