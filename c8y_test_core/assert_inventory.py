@@ -52,6 +52,57 @@ class AssertInventory(AssertDevice):
         except KeyError:
             return
 
+    def assert_contains_supported_operations(
+        self, *types: str, **kwargs
+    ) -> Dict[str, Any]:
+        """Assert presence of some supported operations by checking the c8y_SupportedOperations
+        fragment of the inventory managed object.
+
+        It will only check if the given supported operations exist, other supported operations
+        are allows to also exist which are not included in the assertion.
+
+        Args:
+            *types (str): List of expected supported operations
+
+        Returns:
+            Dict[str, Any]: Managed object
+        """
+        mo = self.assert_contains_fragments(
+            ["c8y_SupportedOperations"], mo=kwargs.pop("mo", None)
+        ).to_json()
+
+        missing = [
+            typeName
+            for typeName in types
+            if typeName not in mo["c8y_SupportedOperations"]
+        ]
+        assert len(missing) == 0, (
+            "c8y_SupportedOperations is missing expected operations.\n"
+            f"missing={missing}\n"
+            f"got={mo['c8y_SupportedOperations']}"
+        )
+        return mo
+
+    def assert_supported_operations(self, *types: str, **kwargs) -> Dict[str, Any]:
+        """Assert exact supported operations by checking the c8y_SupportedOperations
+        fragment of the inventory managed object.
+
+        Args:
+            *types (str): List of expected supported operations
+
+        Returns:
+            Dict[str, Any]: Managed object
+        """
+        mo = self.assert_contains_fragments(
+            ["c8y_SupportedOperations"], mo=kwargs.pop("mo", None)
+        ).to_json()
+        sortedTypes = sorted(types)
+        actualTypes = sorted(mo["c8y_SupportedOperations"])
+        assert (
+            sortedTypes == actualTypes
+        ), f"c8y_SupportedOperations does not match.\nexpected={sortedTypes}\ngot={actualTypes}"
+        return mo
+
     def assert_contains_fragment_values(
         self,
         fragments: Dict[str, Any],
