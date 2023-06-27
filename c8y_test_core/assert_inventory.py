@@ -54,7 +54,7 @@ class AssertInventory(AssertDevice):
 
     def assert_contains_supported_operations(
         self, *types: str, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> ManagedObject:
         """Assert presence of some supported operations by checking the c8y_SupportedOperations
         fragment of the inventory managed object.
 
@@ -65,25 +65,26 @@ class AssertInventory(AssertDevice):
             *types (str): List of expected supported operations
 
         Returns:
-            Dict[str, Any]: Managed object
+            ManagedObject: Managed object
         """
         mo = self.assert_contains_fragments(
             ["c8y_SupportedOperations"], mo=kwargs.pop("mo", None)
-        ).to_json()
+        )
+        mo_dict = mo.to_json()
 
         missing = [
             typeName
             for typeName in types
-            if typeName not in mo["c8y_SupportedOperations"]
+            if typeName not in mo_dict["c8y_SupportedOperations"]
         ]
         assert len(missing) == 0, (
             "c8y_SupportedOperations is missing expected operations.\n"
             f"missing={missing}\n"
-            f"got={mo['c8y_SupportedOperations']}"
+            f"got={mo_dict['c8y_SupportedOperations']}"
         )
         return mo
 
-    def assert_supported_operations(self, *types: str, **kwargs) -> Dict[str, Any]:
+    def assert_supported_operations(self, *types: str, **kwargs) -> ManagedObject:
         """Assert exact supported operations by checking the c8y_SupportedOperations
         fragment of the inventory managed object.
 
@@ -91,13 +92,14 @@ class AssertInventory(AssertDevice):
             *types (str): List of expected supported operations
 
         Returns:
-            Dict[str, Any]: Managed object
+            ManagedObject: Managed object
         """
         mo = self.assert_contains_fragments(
             ["c8y_SupportedOperations"], mo=kwargs.pop("mo", None)
-        ).to_json()
+        )
+        mo_dict = mo.to_json()
         sortedTypes = sorted(types)
-        actualTypes = sorted(mo["c8y_SupportedOperations"])
+        actualTypes = sorted(mo_dict["c8y_SupportedOperations"])
         assert (
             sortedTypes == actualTypes
         ), f"c8y_SupportedOperations does not match.\nexpected={sortedTypes}\ngot={actualTypes}"
