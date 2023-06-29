@@ -98,11 +98,24 @@ class AssertOperation:
         )
         return self.operation
 
-    def assert_not_pending(self, **kwargs) -> Operation:
-        """Assert that the operation status to be not PENDING"""
+    def assert_not_done(self, **kwargs) -> Operation:
+        """Assert that the operation status to be not done (e.g. SUCCESSFUL or FAILED)"""
         self.fetch_operation()
         assert self.operation.status != Operation.Status.PENDING, (
             f"Expected operation (id={self.operation.id}) to not be {Operation.Status.PENDING}, "
+            f"but got: {self.operation.status}"
+        )
+        return self.operation
+
+    def assert_not_pending(self, **kwargs) -> Operation:
+        """Assert that the operation status to be not PENDING"""
+        self.fetch_operation()
+        assert self.operation.status not in [
+            Operation.Status.SUCCESSFUL,
+            Operation.Status.FAILED,
+        ](
+            f"Expected operation (id={self.operation.id}) to not be done "
+            f"[{Operation.Status.SUCCESSFUL} or {Operation.Status.FAILED}]), "
             f"but got: {self.operation.status}"
         )
         return self.operation
