@@ -126,6 +126,15 @@ class AssertOperation:
         )
         return self.operation
 
+    def assert_executing(self, **kwargs) -> Operation:
+        """Assert that the operation is executing"""
+        self.fetch_operation()
+        assert self.operation.status == Operation.Status.EXECUTING, (
+            f"Expected operation (id={self.operation.id}) to be EXECUTING, "
+            f"but got: {self.operation.status}"
+        )
+        return self.operation
+
     def create(self, device_id: str, **kwargs):
         """Create an operation"""
         return AssertOperation(
