@@ -11,6 +11,7 @@ from tenacity import (
     stop_after_delay,
     wait_fixed,
 )
+from requests.exceptions import RequestException
 
 
 def configure_retry(obj: object, func_name: str, **kwargs):
@@ -52,7 +53,7 @@ def retrier(func, *args, **kwargs):
 
         for attempt in Retrying(
             retry=(
-                retry_if_exception_type(AssertionError)
+                retry_if_exception_type((AssertionError, RequestException))
                 & retry_if_not_exception_type(FinalAssertionError)
             ),
             stop=(stop_after_delay(timeout)),
