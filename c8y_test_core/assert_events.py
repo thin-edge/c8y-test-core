@@ -1,4 +1,5 @@
 """Event assertions"""
+import hashlib
 import re
 from typing import List, Union
 
@@ -125,6 +126,7 @@ class Events(AssertDevice):
         expected_contents: str = None,
         expected_pattern: str = None,
         expected_size_min: int = None,
+        expected_md5: str = None,
         encoding: str = "utf8",
         **kwargs,
     ) -> bytes:
@@ -136,6 +138,8 @@ class Events(AssertDevice):
             expected_pattern (str, optional): Expected regex pattern which the contents should match (using re.MULTILINE | re.DOTALL regex flags).
                 Ignored if set to None
             expected_size_min (int, optional): Expected minimum size in bytes. Ignored if set to None.
+            expected_md5 (str, optional): Expected md5 checksum of the file attachment.
+                Defaults to None.
             encoding (str, optional): Encoding to be used when comparing the attachment contents. Defaults to 'utf8'
 
         Returns:
@@ -159,6 +163,11 @@ class Events(AssertDevice):
         elif expected_contents is not None:
             contents = downloaded_file.decode(encoding)
             assert contents == expected_contents
+
+        # Compare checksums
+        if expected_md5 is not None:
+            file_md5 = hashlib.md5(downloaded_file).hexdigest().lower()
+            assert expected_md5.lower() == file_md5
 
         # Return raw bytes so the user can apply their own checks
         return downloaded_file
