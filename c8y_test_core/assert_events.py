@@ -167,7 +167,10 @@ class Events(AssertDevice):
         # Compare checksums
         if expected_md5 is not None:
             file_md5 = hashlib.md5(downloaded_file).hexdigest().lower()
-            assert expected_md5.lower() == file_md5
+            assert expected_md5.lower() == file_md5, (
+                "Event binary checksum (md5) did not match. "
+                f"wanted={expected_md5.lower()}, got={file_md5}"
+            )
 
         # Return raw bytes so the user can apply their own checks
         return downloaded_file
