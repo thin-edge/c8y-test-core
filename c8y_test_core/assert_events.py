@@ -171,7 +171,7 @@ class Events(AssertDevice):
             if Path(expected_md5).is_file():
                 reference_file = expected_md5
                 with open(reference_file) as file:
-                    expected_md5 = hashlib.md5(file).hexdigest()
+                    expected_md5 = hashlib.md5(file.read()).hexdigest()
 
             file_md5 = hashlib.md5(downloaded_file).hexdigest().lower()
             assert expected_md5.lower() == file_md5, (
