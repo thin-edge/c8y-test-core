@@ -1,6 +1,7 @@
 """Event assertions"""
 import hashlib
 import re
+from pathlib import Path
 from typing import List, Union
 
 from c8y_api.model import Event
@@ -138,8 +139,8 @@ class Events(AssertDevice):
             expected_pattern (str, optional): Expected regex pattern which the contents should match (using re.MULTILINE | re.DOTALL regex flags).
                 Ignored if set to None
             expected_size_min (int, optional): Expected minimum size in bytes. Ignored if set to None.
-            expected_md5 (str, optional): Expected md5 checksum of the file attachment.
-                Defaults to None.
+            expected_md5 (str, optional): Expected md5 checksum or a file that should be used
+                to calculated the md5 checksum from. Defaults to None.
             encoding (str, optional): Encoding to be used when comparing the attachment contents. Defaults to 'utf8'
 
         Returns:
@@ -166,6 +167,12 @@ class Events(AssertDevice):
 
         # Compare checksums
         if expected_md5 is not None:
+            # Check if user provide the checksum as a file or not
+            if Path(expected_md5).is_file():
+                reference_file = expected_md5
+                with open(reference_file) as file:
+                    expected_md5 = hashlib.md5(file).hexdigest()
+
             file_md5 = hashlib.md5(downloaded_file).hexdigest().lower()
             assert expected_md5.lower() == file_md5, (
                 "Event binary checksum (md5) did not match. "
