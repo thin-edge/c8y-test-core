@@ -134,6 +134,29 @@ class AssertInventory(AssertDevice):
         ), f"Device is missing some fragments. wanted={missing}, got={list(mo_dict.keys())}"
         return mo
 
+    def assert_missing_fragments(
+        self,
+        fragments: List[str],
+        mo: ManagedObject = None,
+        **kwargs,
+    ) -> ManagedObject:
+        """Assert the absence of fragments in a managed object
+        
+        Args:
+            fragments (List[str]): List of fragments that should not be present on the
+                device's managed object
+            mo (ManagedObject, optional): Managed object to check
+        """
+        if mo is None:
+            mo = self.context.client.inventory.get(self.context.device_id)
+
+        mo_dict = mo.to_json()
+        existing = [key for key in fragments if key in mo_dict]
+        assert (
+            existing == []
+        ), f"Device is missing some fragments. wanted=[], got={existing}"
+        return mo
+
     def assert_changed(
         self,
         reference_object: Dict[str, Any],
