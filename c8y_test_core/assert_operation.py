@@ -83,9 +83,9 @@ class AssertOperation:
             ), "failureReason is mandatory when setting to FAILED"
             actual_failure_reason = self.operation.to_json().get("failureReason")
             assert actual_failure_reason == compare.RegexPattern(failure_reason), (
-                "Failure reason does not match regex pattern\n",
-                f"got: {actual_failure_reason}\n",
-                f"wanted: {failure_reason}",
+                "Failure reason does not match regex pattern\n"
+                f"got: {actual_failure_reason}\n"
+                f"wanted: {failure_reason}"
             )
         return self.operation
 
@@ -137,7 +137,7 @@ class AssertOperation:
 
         delivery_status = props["delivery"].get("status", "")
         assert delivery_status == "DELIVERED", (
-            f"Expected operation (id={self.operation.id}) to be DELIEVERED, "
+            f"Expected operation (id={self.operation.id}) to be DELIVERED, "
             f"but got: {delivery_status}"
         )
         return self.operation
