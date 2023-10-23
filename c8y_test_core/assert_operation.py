@@ -81,8 +81,11 @@ class AssertOperation:
             assert (
                 "failureReason" in self.operation
             ), "failureReason is mandatory when setting to FAILED"
-            assert self.operation["failureReason"] == compare.RegexPattern(
-                failure_reason
+            actual_failure_reason = self.operation.to_json().get("failureReason")
+            assert actual_failure_reason == compare.RegexPattern(failure_reason), (
+                "Failure reason does not match regex pattern\n",
+                f"got: {actual_failure_reason}\n",
+                f"wanted: {failure_reason}",
             )
         return self.operation
 

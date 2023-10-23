@@ -141,7 +141,7 @@ class AssertInventory(AssertDevice):
         **kwargs,
     ) -> ManagedObject:
         """Assert the absence of fragments in a managed object
-        
+
         Args:
             fragments (List[str]): List of fragments that should not be present on the
                 device's managed object
