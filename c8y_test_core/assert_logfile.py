@@ -4,12 +4,14 @@ from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_operation import AssertOperation
 
+SUPPORTED_LOGFILE_TYPES = "c8y_SupportedLogs"
+
 
 class DeviceLogFile(AssertDevice):
     """Device log file assertions"""
 
     def assert_supported_types(
-        self, *types: str, include: bool = True, **kwargs
+        self, *types: str, include: bool = True, mo: ManagedObject = None, **kwargs
     ) -> ManagedObject:
         """Assert presence of some supported log file types by checking the c8y_SupportedLogs
         fragment of the inventory managed object.
@@ -25,27 +27,29 @@ class DeviceLogFile(AssertDevice):
         Returns:
             ManagedObject: Managed object
         """
-        mo = self.assert_contains_fragments(
-            ["c8y_SupportedLogs"], mo=kwargs.pop("mo", None)
-        )
-        mo_dict = mo.to_json()
+        if mo is None:
+            mo = self.context.client.inventory.get(self.context.device_id)
+        mo_json = mo.to_json()
+
+        assert (
+            SUPPORTED_LOGFILE_TYPES in mo_json
+        ), f"Supported log file types fragment is missing {SUPPORTED_LOGFILE_TYPES} from managed object"
+        supported_types = mo_json.get(SUPPORTED_LOGFILE_TYPES, [])
 
         if include:
             # Only check if the given types are present and ignore extra ones
             missing = [
-                typeName
-                for typeName in types
-                if typeName not in mo_dict["c8y_SupportedLogs"]
+                typeName for typeName in types if typeName not in supported_types
             ]
             assert len(missing) == 0, (
                 "c8y_SupportedLogs is missing expected types.\n"
                 f"missing={missing}\n"
-                f"got={mo_dict['c8y_SupportedLogs']}"
+                f"got={supported_types}"
             )
         else:
             # Exact match, check all types
             expected_types = sorted(types)
-            actual_types = sorted(mo_dict["c8y_SupportedLogs"])
+            actual_types = sorted(supported_types)
             assert actual_types == expected_types, (
                 "c8y_SupportedLogs does not match expected list.\n"
                 f"want={expected_types}\n"
