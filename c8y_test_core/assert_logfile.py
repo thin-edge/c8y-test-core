@@ -1,11 +1,58 @@
 """Device logfile assertions"""
 from datetime import datetime, timedelta
+from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_operation import AssertOperation
 
 
 class DeviceLogFile(AssertDevice):
     """Device log file assertions"""
+
+    def assert_supported_types(
+        self, *types: str, include: bool = True, **kwargs
+    ) -> ManagedObject:
+        """Assert presence of some supported log file types by checking the c8y_SupportedLogs
+        fragment of the inventory managed object.
+
+        It will only check if the given supported log file types exist, other supported log file
+        types are allowed to also exist which are not included in the assertion.
+
+        Args:
+            *types (str): List of expected supported operations
+            include (bool): Only check if the given types are included
+                and don't fail if additional types are found
+
+        Returns:
+            ManagedObject: Managed object
+        """
+        mo = self.assert_contains_fragments(
+            ["c8y_SupportedLogs"], mo=kwargs.pop("mo", None)
+        )
+        mo_dict = mo.to_json()
+
+        if include:
+            # Only check if the given types are present and ignore extra ones
+            missing = [
+                typeName
+                for typeName in types
+                if typeName not in mo_dict["c8y_SupportedLogs"]
+            ]
+            assert len(missing) == 0, (
+                "c8y_SupportedLogs is missing expected types.\n"
+                f"missing={missing}\n"
+                f"got={mo_dict['c8y_SupportedLogs']}"
+            )
+        else:
+            # Exact match, check all types
+            expected_types = sorted(types)
+            actual_types = sorted(mo_dict["c8y_SupportedLogs"])
+            assert actual_types == expected_types, (
+                "c8y_SupportedLogs does not match expected list.\n"
+                f"want={expected_types}\n"
+                f"got={actual_types}"
+            )
+
+        return mo
 
     def get_logfile(
         self,
