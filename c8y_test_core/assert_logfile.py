@@ -57,8 +57,8 @@ class DeviceLogFile(AssertDevice):
     def get_logfile(
         self,
         type: str,
-        date_from: datetime,
-        date_to: datetime,
+        date_from: datetime = None,
+        date_to: datetime = None,
         maximum_lines: int = 100,
         search_text: str = "",
         **kwargs,
