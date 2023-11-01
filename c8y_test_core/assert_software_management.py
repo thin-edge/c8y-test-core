@@ -37,7 +37,7 @@ class SoftwareManagement(AssertDevice):
         The software can be marked as install or delete
         """
         fragments = {
-            "description": "Install software: "
+            "description": "Update software: "
             + ",".join(software.name for software in software_list),
             "c8y_SoftwareUpdate": [software.__dict__ for software in software_list],
             **kwargs,
