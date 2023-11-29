@@ -78,15 +78,18 @@ class AssertOperation:
             raise
 
         if failure_reason is not None:
-            assert (
-                "failureReason" in self.operation
-            ), "failureReason is mandatory when setting to FAILED"
-            actual_failure_reason = self.operation.to_json().get("failureReason")
-            assert actual_failure_reason == compare.RegexPattern(failure_reason), (
-                "Failure reason does not match regex pattern\n"
-                f"got: {actual_failure_reason}\n"
-                f"wanted: {failure_reason}"
-            )
+            try:
+                assert (
+                    "failureReason" in self.operation
+                ), "failureReason is mandatory when setting to FAILED"
+                actual_failure_reason = self.operation.to_json().get("failureReason")
+                assert actual_failure_reason == compare.RegexPattern(failure_reason), (
+                    "Failure reason does not match regex pattern\n"
+                    f"got: {actual_failure_reason}\n"
+                    f"wanted: {failure_reason}"
+                )
+            except AssertionError as ex:
+                raise FinalAssertionError(ex)
         return self.operation
 
     def assert_done(self, **kwargs) -> Operation:
