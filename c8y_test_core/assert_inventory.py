@@ -114,9 +114,11 @@ class AssertInventory(AssertDevice):
         """Assert the present and the values of fragments in the device managed object"""
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
-        assert compare_dataclass(
-            mo.to_json(), fragments
-        ), f"{mo_json} doesn't have fragments: {fragments}"
+        assert compare_dataclass(mo.to_json(), fragments), (
+            "Managed object does not contain fragment values\n"
+            f"  wanted={fragments}\n"
+            f"  got={mo.to_json()}"
+        )
         return mo
 
     def assert_contains_fragments(
