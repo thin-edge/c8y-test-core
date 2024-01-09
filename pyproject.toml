@@ -13,7 +13,7 @@ write_to = "c8y_test_core/_version.py"
 name = "c8y_test_core"
 description = "Core test library for Cumulocity IoT"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 keywords = ["CumulocityIoT", "testing"]
 license = {text = "MIT"}
 classifiers = [
@@ -21,11 +21,10 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "c8y-api >= 1.5, < 1.6",
-    "python-dotenv >= 0.20.0, < 0.21.0",
+    "c8y-api >= 1.10, < 1.11",
+    "python-dotenv >= 1.0.0, < 1.1.0",
     "pyyaml >= 6.0, < 7.0",
-    "requests >= 2.28.1, < 2.29.0",
+    "requests >= 2.31.0, < 2.32.0",
     "tenacity >= 8.1.0, < 8.2.0",
     "randomname >= 0.1.5, < 0.2.0",
-    "importlib-metadata >= 6.0.0, < 7.0.0; python_version<'3.8'",
 ]
