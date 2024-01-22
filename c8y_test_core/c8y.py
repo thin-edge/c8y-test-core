@@ -5,7 +5,9 @@ import os
 
 from c8y_api._auth import HTTPBearerAuth
 from c8y_api.app import CumulocityApi, _CumulocityAppBase
+from requests.adapters import HTTPAdapter
 from requests.auth import HTTPBasicAuth
+from requests.sessions import Session
 
 
 class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
@@ -28,7 +30,11 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
     log = logging.getLogger(__name__)
 
     def __init__(
-        self, application_key: str = None, cache_size: int = 100, cache_ttl: int = 3600
+        self,
+        application_key: str = None,
+        cache_size: int = 100,
+        cache_ttl: int = 3600,
+        timeout: float = 60,
     ):
         """Create a new tenant specific instance.
 
@@ -39,6 +45,8 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
                 instances (if user instances are created at all).
             cache_ttl (int|None): An maximum cache time for user
                 instances (if user instances are created at all).
+            timeout (float|None): Default request timeout in seconds.
+                Defaults to 60.
 
         Returns:
             A new CumulocityApp instance
@@ -70,6 +78,9 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
             # Don't raise as it prevent the library from being imported
             # raise Exception("Unknown authorization")
 
+        # Default request timeout
+        self._default_timeout = timeout
+
         super().__init__(
             log=self.log,
             cache_size=cache_size,
@@ -79,6 +90,15 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
             auth=auth,
             application_key=application_key,
         )
+
+    def _create_session(self) -> Session:
+        # Support setting a global timeout to avoid hanging on connection problems
+        # Override private create_session
+        # TODO: Remove once c8y_api supports setting a global timeout setting
+        s = super()._create_session()
+        s.mount("http://", HTTPAdapter(timeout=self._default_timeout))
+        s.mount("https://", HTTPAdapter(timeout=self._default_timeout))
+        return s
 
     def _build_user_instance(self, auth) -> CumulocityApi:
         """Build a CumulocityApi instance for a specific user, using the
