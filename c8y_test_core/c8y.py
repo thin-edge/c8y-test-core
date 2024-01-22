@@ -10,6 +10,19 @@ from requests.auth import HTTPBasicAuth
 from requests.sessions import Session
 
 
+class HTTPAdapterWithDefaults(HTTPAdapter):
+    """HTTP Adapter with custom default such as timeout
+    """
+    def __init__(self, timeout: float = 60.0, *args, **kwargs):
+        self.timeout = timeout
+        super(HTTPAdapterWithDefaults, self).__init__(*args, **kwargs)
+
+    def send(self, *args, **kwargs):
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = self.timeout
+        return super(HTTPAdapterWithDefaults, self).send(*args, **kwargs)
+
+
 class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
     """Application-like Cumulocity API.
 
@@ -96,8 +109,8 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
         # Override private create_session
         # TODO: Remove once c8y_api supports setting a global timeout setting
         s = super()._create_session()
-        s.mount("http://", HTTPAdapter(timeout=self._default_timeout))
-        s.mount("https://", HTTPAdapter(timeout=self._default_timeout))
+        s.mount("http://", HTTPAdapterWithDefaults(timeout=self._default_timeout))
+        s.mount("https://", HTTPAdapterWithDefaults(timeout=self._default_timeout))
         return s
 
     def _build_user_instance(self, auth) -> CumulocityApi:
