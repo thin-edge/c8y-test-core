@@ -8,11 +8,18 @@ from c8y_api.app import CumulocityApi, _CumulocityAppBase
 from requests.adapters import HTTPAdapter
 from requests.auth import HTTPBasicAuth
 from requests.sessions import Session
+from urllib3.util import Retry
+
+
+retry_strategy = Retry(
+    total=3,
+    status_forcelist=[429, 500, 502, 503, 504],
+)
 
 
 class HTTPAdapterWithDefaults(HTTPAdapter):
-    """HTTP Adapter with custom default such as timeout
-    """
+    """HTTP Adapter with custom default such as timeout"""
+
     def __init__(self, timeout: float = 60.0, *args, **kwargs):
         self.timeout = timeout
         super(HTTPAdapterWithDefaults, self).__init__(*args, **kwargs)
@@ -109,8 +116,11 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
         # Override private create_session
         # TODO: Remove once c8y_api supports setting a global timeout setting
         s = super()._create_session()
-        s.mount("http://", HTTPAdapterWithDefaults(timeout=self._default_timeout))
-        s.mount("https://", HTTPAdapterWithDefaults(timeout=self._default_timeout))
+        adapter = HTTPAdapterWithDefaults(
+            timeout=self._default_timeout, max_retries=retry_strategy
+        )
+        s.mount("http://", adapter)
+        s.mount("https://", adapter)
         return s
 
     def _build_user_instance(self, auth) -> CumulocityApi:
