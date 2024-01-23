@@ -126,9 +126,18 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
     def _build_user_instance(self, auth) -> CumulocityApi:
         """Build a CumulocityApi instance for a specific user, using the
         same Base URL, Tenant ID and Application Key as the main instance."""
-        return CumulocityApi(
+        api = CumulocityApi(
             base_url=self.base_url,
             tenant_id=self.tenant_id,
             auth=auth,
             application_key=self.application_key,
         )
+
+        # Set the tenant_id if not already set
+        if not self.tenant_id:
+            response = api.get("tenant/currentTenant")
+            if "name" in response:
+                api.tenant_id = response["name"]
+                self.log.info("Updated tenant_id: %s", response["name"])
+
+        return api
