@@ -26,6 +26,7 @@ class Software:
     version: str = ""
     url: str = ""
     action: str = ""
+    type: str = ""
 
     def __eq__(self, obj: object) -> bool:
         if isinstance(obj, Software):

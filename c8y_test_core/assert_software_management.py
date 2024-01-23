@@ -72,12 +72,14 @@ class SoftwareManagement(AssertDevice):
         INSTALLED = "INSTALLED"
         VERSION_MISMATCH = "VERSION_MISMATCH"
         VERSION_MATCH = "VERSION_MATCH"
+        TYPE_MATCH = "TYPE_MATCH"
 
     def assert_software_installed(
         self, *expected_software_list: Software, mo: ManagedObject = None, **kwargs
     ) -> Dict[_package_name, Dict[str, _package]]:
         """Assert that a list of software packages are installed.
         If the version is empty, then version matching is skipped.
+        If the type is empty, then type matching is skipped.
 
         Returns:
             Dict[_package_name, Dict[str, _package]]: A dictionary with all of the
@@ -99,20 +101,31 @@ class SoftwareManagement(AssertDevice):
                 errors.append((exp_software.name, self.Reasons.MISSING))
                 continue
 
-            if not exp_software.version:
-                continue
-
             # version check
-            version_pattern = re.compile(exp_software.version)
-            for current_software in mo["c8y_SoftwareList"]:
-                if current_software[
-                    "name"
-                ] == exp_software.name and version_pattern.match(
-                    current_software["version"]
-                ):
-                    break
-            else:
-                errors.append((exp_software.name, self.Reasons.VERSION_MISMATCH))
+            if exp_software.version:
+                version_pattern = re.compile(exp_software.version)
+                for current_software in mo["c8y_SoftwareList"]:
+                    if current_software[
+                        "name"
+                    ] == exp_software.name and version_pattern.match(
+                        current_software["version"]
+                    ):
+                        break
+                else:
+                    errors.append((exp_software.name, self.Reasons.VERSION_MISMATCH))
+
+            # type check
+            if exp_software.type:
+                type_pattern = re.compile(exp_software.type)
+                for current_software in mo["c8y_SoftwareList"]:
+                    if current_software[
+                        "name"
+                    ] == exp_software.name and type_pattern.match(
+                        current_software["type"]
+                    ):
+                        break
+                else:
+                    errors.append((exp_software.name, self.Reasons.TYPE_MATCH))
 
         assert len(errors) == 0, (
             "Software not installed. "
