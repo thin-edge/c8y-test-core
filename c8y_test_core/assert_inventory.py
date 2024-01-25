@@ -228,7 +228,12 @@ class AssertInventory(AssertDevice):
                 "withTotalPages": "true",
             },
         )
-        assert result_json["statistics"]["totalPages"] == 0
+        total = result_json["statistics"]["totalPages"]
+        assert total == 0, (
+            "Managed object should not have any child devices\n"
+            "want=0\n"
+            f"got={total}"
+        )
 
     def assert_relationship(
         self,
