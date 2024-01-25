@@ -107,11 +107,9 @@ class SoftwareManagement(AssertDevice):
             if exp_software.version:
                 version_pattern = re.compile(exp_software.version)
                 for current_software in mo["c8y_SoftwareList"]:
-                    if current_software[
-                        "name"
-                    ] == exp_software.name and version_pattern.match(
-                        current_software["version"]
-                    ):
+                    name = current_software.get("name", "")
+                    version = current_software.get("version", "")
+                    if name == exp_software.name and version_pattern.match(version):
                         break
                 else:
                     errors.append((exp_software.name, self.Reasons.VERSION_MISMATCH))
@@ -120,11 +118,9 @@ class SoftwareManagement(AssertDevice):
             if exp_software.type:
                 type_pattern = re.compile(exp_software.type)
                 for current_software in mo["c8y_SoftwareList"]:
-                    if current_software[
-                        "name"
-                    ] == exp_software.name and type_pattern.match(
-                        current_software["type"]
-                    ):
+                    name = current_software.get("name", "")
+                    software_type = current_software.get("type", "")
+                    if name == exp_software.name and type_pattern.match(software_type):
                         break
                 else:
                     errors.append((exp_software.name, self.Reasons.TYPE_MATCH))
