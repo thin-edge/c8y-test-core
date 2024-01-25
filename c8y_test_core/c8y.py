@@ -17,6 +17,20 @@ retry_strategy = Retry(
 )
 
 
+def resolve_tenant_id(api: CumulocityApi):
+    """Try to resolve the tenant_id by looking it up via an REST API call
+
+    It will set the value on the given api object.
+    """
+    try:
+        response = api.get("/tenant/currentTenant")
+        if "name" in response:
+            api.tenant_id = response["name"]
+            api.log.info("Updated tenant_id (from api): %s", response["name"])
+    except Exception as ex:
+        api.log.warning("Could not lookup tenant id via api. %s", ex)
+
+
 class HTTPAdapterWithDefaults(HTTPAdapter):
     """HTTP Adapter with custom default such as timeout"""
 
@@ -111,6 +125,9 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
             application_key=application_key,
         )
 
+        if not self.tenant_id:
+            resolve_tenant_id(self)
+
     def _create_session(self) -> Session:
         # Support setting a global timeout to avoid hanging on connection problems
         # Override private create_session
@@ -133,11 +150,6 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
             application_key=self.application_key,
         )
 
-        # Set the tenant_id if not already set
-        if not self.tenant_id:
-            response = api.get("tenant/currentTenant")
-            if "name" in response:
-                api.tenant_id = response["name"]
-                self.log.info("Updated tenant_id: %s", response["name"])
-
+        if not api.tenant_id:
+            resolve_tenant_id(api)
         return api
