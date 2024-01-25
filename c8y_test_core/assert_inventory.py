@@ -219,6 +219,17 @@ class AssertInventory(AssertDevice):
         assert sorted(expected_devices) == sorted(map(lambda x: x["name"], children))
         return children
 
+    def assert_no_child_devices(self, **kwargs) -> List[Dict[str, Any]]:
+        """Assert that a device has no child devices"""
+        result_json = self.context.client.get(
+            f"/inventory/managedObjects/{self.context.device_id}/childDevices",
+            params={
+                "pageSize": 1,
+                "withTotalPages": "true",
+            },
+        )
+        assert result_json["statistics"]["totalPages"] == 0
+
     def assert_relationship(
         self,
         child_identity: str,
