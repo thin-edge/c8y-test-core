@@ -110,7 +110,7 @@ class AssertOperation:
         assert self.operation.status not in [
             Operation.Status.SUCCESSFUL,
             Operation.Status.FAILED,
-        ](
+        ], (
             f"Expected operation (id={self.operation.id}) to not be done "
             f"[{Operation.Status.SUCCESSFUL} or {Operation.Status.FAILED}]), "
             f"but got: {self.operation.status}"
