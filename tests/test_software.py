@@ -52,6 +52,18 @@ class TestSoftwareInstalled(unittest.TestCase):
                 Software("package1", version=r".+deb11"), mo=mo, timeout=0.01
             )
 
+    def test_invalid_version_regex(self):
+        mo = create_mo_with_software(
+            [
+                {"name": "package1", "version": "1.0.0~10+deb12"},
+            ]
+        )
+
+        with self.assertRaises(Exception):
+            self.software.assert_software_installed(
+                Software("package1", version=r"+"), mo=mo, timeout=0.01
+            )
+
     def test_package_is_installed_match_by_type(self):
         mo = create_mo_with_software(
             [
