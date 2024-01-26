@@ -2,21 +2,21 @@
 # Install python virtual environment
 [unix]
 venv:
-    [ -d .venv ] || python -m venv .venv
-    ./.venv/bin/pip install .
+    [ -d .venv ] || python3 -m venv .venv
+    ./.venv/bin/pip3 install .
 
 # Run unit tests
 [unix]
 test:
-    ./.venv/bin/python -m unittest -v
+    ./.venv/bin/python3 -m unittest -v
 
 [windows]
 venv:
-    [ -d .venv ] || python -m venv .venv
-    ./.venv/Scripts/pip install .
+    [ -d .venv ] || python3 -m venv .venv
+    ./.venv/Scripts/pip3 install .
 
 
 # Run unit tests
 [windows]
 test:
-    ./.venv/Scripts/python -m unittest -v
+    ./.venv/Scripts/python3 -m unittest -v
