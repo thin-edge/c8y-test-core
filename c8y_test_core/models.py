@@ -34,13 +34,9 @@ class Software:
             return compare_dataclass(self, obj)
         return compare_dataclass(self, Software(**obj))
 
-    def to_update_format(self) -> Dict[str, str]:
-        """Return software item in the format expected by the
-        c8y_SoftwareUpdate operation
-        """
-        value = self.__dict__
-        value["softwareType"] = value.pop("type", "")
-        return value
+    def to_dict(self) -> Dict[str, str]:
+        """Return software item as a dictionary"""
+        return self.__dict__
 
 
 @dataclasses.dataclass

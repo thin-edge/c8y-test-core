@@ -39,9 +39,7 @@ class SoftwareManagement(AssertDevice):
         fragments = {
             "description": "Update software: "
             + ",".join(software.name for software in software_list),
-            "c8y_SoftwareUpdate": [
-                software.to_update_format() for software in software_list
-            ],
+            "c8y_SoftwareUpdate": [software.to_dict() for software in software_list],
             **kwargs,
         }
         return self._execute(**fragments)
@@ -59,7 +57,7 @@ class SoftwareManagement(AssertDevice):
             "description": "Install software: "
             + ",".join(software.name for software in software_list),
             "c8y_SoftwareList": [
-                {**software.to_update_format(), "action": self.Action.INSTALL}
+                {**software.to_dict(), "action": self.Action.INSTALL}
                 for software in software_list
             ],
             **kwargs,
