@@ -115,11 +115,11 @@ class SoftwareManagement(AssertDevice):
                     errors.append((exp_software.name, self.Reasons.VERSION_MISMATCH))
 
             # type check
-            if exp_software.type:
-                type_pattern = re.compile(exp_software.type)
+            if exp_software.softwareType:
+                type_pattern = re.compile(exp_software.softwareType)
                 for current_software in mo["c8y_SoftwareList"]:
                     name = current_software.get("name", "")
-                    software_type = current_software.get("type", "")
+                    software_type = current_software.get("softwareType", "")
                     if name == exp_software.name and type_pattern.match(software_type):
                         break
                 else:
