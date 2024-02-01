@@ -67,18 +67,20 @@ class TestSoftwareInstalled(unittest.TestCase):
     def test_package_is_installed_match_by_type(self):
         mo = create_mo_with_software(
             [
-                {"name": "package1", "version": "1.0.0", "type": "apt"},
+                {"name": "package1", "version": "1.0.0", "softwareType": "apt"},
             ]
         )
         self.software.assert_software_installed(
-            Software("package1", version=r"1\.[0-9]+\.[0-9]", type="apt"),
+            Software("package1", version=r"1\.[0-9]+\.[0-9]", softwareType="apt"),
             mo=mo,
             timeout=0.01,
         )
 
         with self.assertRaisesRegex(AssertionError, "TYPE_MATCH"):
             self.software.assert_software_installed(
-                Software("package1", version=r"1\.[0-9]+\.[0-9]", type="debian"),
+                Software(
+                    "package1", version=r"1\.[0-9]+\.[0-9]", softwareType="debian"
+                ),
                 mo=mo,
                 timeout=0.01,
             )

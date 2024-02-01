@@ -39,9 +39,7 @@ class SoftwareManagement(AssertDevice):
         fragments = {
             "description": "Update software: "
             + ",".join(software.name for software in software_list),
-            "c8y_SoftwareUpdate": [
-                software.to_update_format() for software in software_list
-            ],
+            "c8y_SoftwareUpdate": [software.to_dict() for software in software_list],
             **kwargs,
         }
         return self._execute(**fragments)
@@ -59,7 +57,7 @@ class SoftwareManagement(AssertDevice):
             "description": "Install software: "
             + ",".join(software.name for software in software_list),
             "c8y_SoftwareList": [
-                {**software.to_update_format(), "action": self.Action.INSTALL}
+                {**software.to_dict(), "action": self.Action.INSTALL}
                 for software in software_list
             ],
             **kwargs,
@@ -115,11 +113,11 @@ class SoftwareManagement(AssertDevice):
                     errors.append((exp_software.name, self.Reasons.VERSION_MISMATCH))
 
             # type check
-            if exp_software.type:
-                type_pattern = re.compile(exp_software.type)
+            if exp_software.softwareType:
+                type_pattern = re.compile(exp_software.softwareType)
                 for current_software in mo["c8y_SoftwareList"]:
                     name = current_software.get("name", "")
-                    software_type = current_software.get("type", "")
+                    software_type = current_software.get("softwareType", "")
                     if name == exp_software.name and type_pattern.match(software_type):
                         break
                 else:
