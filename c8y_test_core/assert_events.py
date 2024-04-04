@@ -92,7 +92,11 @@ class Events(AssertDevice):
         assert exists == False, "Attachment should not exist"
 
     def assert_attachment_info(
-        self, event: Union[Event, str], expected_name_pattern: str = None, **kwargs
+        self,
+        event: Union[Event, str],
+        expected_name_pattern: str = None,
+        expected_type_pattern: str = None,
+        **kwargs,
     ) -> Event:
         """Assert that the attachment meta information matches
         The meta information controls the name of the file when the user downloads it from
@@ -102,6 +106,7 @@ class Events(AssertDevice):
             event (Event, str): Event or event id to check. If the users provides an event id
                 it will be looked up.
             expected_name_pattern (str, optional): Expected name pattern. Ignored if set to None.
+            expected_type_pattern (str, optional): Expected type pattern. Ignored if set to None.
 
         Returns:
             Event: Event
@@ -118,6 +123,12 @@ class Events(AssertDevice):
             assert name == compare.RegexPattern(
                 expected_name_pattern
             ), "Attachment name does not match"
+
+        if expected_type_pattern is not None:
+            type_name = data["c8y_IsBinary"]["type"]
+            assert type_name == compare.RegexPattern(
+                expected_type_pattern
+            ), "Attachment type does not match"
 
         return event
 
