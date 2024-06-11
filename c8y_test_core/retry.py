@@ -1,4 +1,5 @@
 """Retry utils"""
+import logging
 import re
 from functools import wraps
 from c8y_test_core.errors import FinalAssertionError
@@ -10,8 +11,11 @@ from tenacity import (
     retry_if_not_exception_type,
     stop_after_delay,
     wait_fixed,
+    RetryCallState,
 )
 from requests.exceptions import RequestException
+
+log = logging.getLogger("c8y")
 
 
 def configure_retry(obj: object, func_name: str, **kwargs):
@@ -45,6 +49,23 @@ def configure_retry_on_members(obj: object, pattern: str, **kwargs):
             setattr(obj, name, wrapper(getattr(obj, name)))
 
 
+def before_first_attempt(retry_state: RetryCallState):
+    """Before retry setup
+
+    The function is called before the first attempt
+    """
+    log.debug("Setting up retry: retry_state=%s", retry_state)
+
+
+def after_failed_attempt(retry_state: RetryCallState):
+    """Callback after each failed attempt"""
+    log.info(
+        "Failed attempt [attempt=%d]: retry_state=%s",
+        retry_state.attempt_number,
+        retry_state,
+    )
+
+
 def retrier(func, *args, **kwargs):
     attempt = None
     try:
@@ -59,9 +80,23 @@ def retrier(func, *args, **kwargs):
             stop=(stop_after_delay(timeout)),
             wait=wait_fixed(wait),
             reraise=True,
+            before=before_first_attempt,
+            after=after_failed_attempt,
         ):
             with attempt:
-                return func(*args, **kwargs)
+                if attempt.retry_state.attempt_number > 0:
+                    log.debug(
+                        "[attempt=%d] Executing %s",
+                        attempt.retry_state.attempt_number,
+                        func.__name__,
+                    )
+                result = func(*args, **kwargs)
+                log.info(
+                    "[attempt=%d] Successful %s",
+                    attempt.retry_state.attempt_number,
+                    func.__name__,
+                )
+                return result
     except RetryError as ex:
         raise ex
     except Exception as ex:
