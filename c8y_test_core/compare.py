@@ -30,6 +30,8 @@ def compare_dataclass(obj1: object, obj2: object) -> bool:
         if isinstance(value, re.Pattern):
             if not re.match(value, obj1_dict.get(key, "")):
                 return False
+        elif isinstance(value, dict):
+            return compare_dataclass(obj1_dict.get(key, ""), value)
         else:
             if value != obj1_dict.get(key, ""):
                 return False
