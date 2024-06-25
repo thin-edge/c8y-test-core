@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.compare import compare_dataclass
+from c8y_test_core.errors import FinalAssertionError
 
 
 log = logging.getLogger()
@@ -114,6 +115,12 @@ class AssertInventory(AssertDevice):
         """Assert the present and the values of fragments in the device managed object"""
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
+
+        if not fragments:
+            raise FinalAssertionError(
+                "At least 1 fragment is required to compare objects"
+            )
+
         assert compare_dataclass(mo.to_json(), fragments), (
             "Managed object does not contain fragment values\n"
             f"  wanted={fragments}\n"
