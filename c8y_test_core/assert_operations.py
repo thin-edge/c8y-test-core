@@ -68,3 +68,21 @@ class AssertOperations:
             )
 
         return operations
+
+    def assert_all_completed(
+        self, device_id: Optional[str] = None, **kwargs
+    ) -> List[Any]:
+        """Assert that all operations have been completed, e.g. no operations are in
+        PENDING or EXECUTING status.
+
+        Operations that are still in PENDING or EXECUTING status, usually indicate that there
+        is a problem with the agent, so it is good practice to run this assertion when testing
+        Cumulocity IoT agents.
+        """
+        kwargs.pop("status")
+        self.assert_count(
+            min_count=0, max_count=0, device_id=device_id, status="PENDING", **kwargs
+        )
+        self.assert_count(
+            min_count=0, max_count=0, device_id=device_id, status="EXECUTING", **kwargs
+        )
