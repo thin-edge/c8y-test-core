@@ -24,8 +24,8 @@ def strip_retry_parameters(options: Dict[str, Any]) -> Dict[str, Any]:
     to the retry mechanism
     """
     output = options.copy()
-    output.pop("timeout")
-    output.pop("wait")
+    output.pop("timeout", None)
+    output.pop("wait", None)
     return output
 
 

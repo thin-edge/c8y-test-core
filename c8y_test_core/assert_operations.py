@@ -79,7 +79,7 @@ class AssertOperations:
         is a problem with the agent, so it is good practice to run this assertion when testing
         Cumulocity IoT agents.
         """
-        kwargs.pop("status")
+        kwargs.pop("status", None)
         self.assert_count(
             min_count=0, max_count=0, device_id=device_id, status="PENDING", **kwargs
         )
