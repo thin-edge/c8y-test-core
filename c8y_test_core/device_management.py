@@ -18,6 +18,7 @@ from c8y_test_core.assert_logfile import DeviceLogFile
 from c8y_test_core.assert_inventory import AssertInventory
 from c8y_test_core.assert_measurements import AssertMeasurements
 from c8y_test_core.assert_operation import AssertOperation
+from c8y_test_core.assert_operations import AssertOperations
 from c8y_test_core.assert_software_management import SoftwareManagement
 from c8y_test_core.context import AssertContext
 from c8y_test_core.retry import configure_retry_on_members
@@ -43,6 +44,7 @@ class DeviceManagement(AssertDevice):
         self.identity = AssertIdentity(context)
         self.inventory = AssertInventory(context)
         self.measurements = AssertMeasurements(context)
+        self.operations = AssertOperations(context)
         self.software_management = SoftwareManagement(context)
 
     @property
