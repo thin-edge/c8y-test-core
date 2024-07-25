@@ -2,6 +2,7 @@
 import logging
 import re
 from functools import wraps
+from typing import Dict, Any
 from c8y_test_core.errors import FinalAssertionError
 from tenacity import (
     RetryError,
@@ -16,6 +17,16 @@ from tenacity import (
 from requests.exceptions import RequestException
 
 log = logging.getLogger("c8y")
+
+
+def strip_retry_parameters(options: Dict[str, Any]) -> Dict[str, Any]:
+    """Strip any keys from a given dictionary which are related
+    to the retry mechanism
+    """
+    output = options.copy()
+    output.pop("timeout")
+    output.pop("wait")
+    return output
 
 
 def configure_retry(obj: object, func_name: str, **kwargs):
