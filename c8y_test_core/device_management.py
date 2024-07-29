@@ -10,6 +10,7 @@ from c8y_test_core.assert_command import Command
 from c8y_test_core.assert_configuration import DeviceConfiguration
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_device_certificate import AssertDeviceCertificate
+from c8y_test_core.assert_device_registration import AssertDeviceRegistration
 from c8y_test_core.assert_alarms import Alarms
 from c8y_test_core.assert_events import Events
 from c8y_test_core.assert_firmware import FirmwareManagement
@@ -38,6 +39,7 @@ class DeviceManagement(AssertDevice):
         self.logs = DeviceLogFile(context)
         self.device_status = AssertDeviceAvailability(context)
         self.trusted_certificates = AssertDeviceCertificate(context)
+        self.registration = AssertDeviceRegistration(context)
         self.alarms = Alarms(context)
         self.events = Events(context)
         self.firmware_management = FirmwareManagement(context)
