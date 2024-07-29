@@ -21,14 +21,14 @@ jobs:
       - name: Checkout PR
         uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "${{matrix.python-version}}"
           cache: 'pip'
           cache-dependency-path: |
             pyproject.toml
 
-      - uses: extractions/setup-just@v1
+      - uses: extractions/setup-just@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
