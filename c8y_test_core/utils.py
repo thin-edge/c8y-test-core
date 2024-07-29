@@ -2,8 +2,7 @@
 from __future__ import annotations
 
 import base64
-import re
-from typing import List, Set, Any
+from typing import List, Set, Any, Tuple
 from unittest.mock import Mock
 
 import randomname
@@ -80,7 +79,7 @@ class RandomNameGenerator:
     def random_name(cls, num: int = 3, sep: str = "_") -> str:
         """Generate a readable random name from joined random words.
         Args:
-            num (int):  number of random words to concactenate
+            num (int):  number of random words to concatenate
             sep (str):  concatenation separator
         Returns:
             The generated name
@@ -117,3 +116,38 @@ def build_auth_string(auth_value: str) -> str:
     that JWT tokens always start with an '{'."""
     auth_type = "BEARER" if auth_value.startswith("ey") else "BASIC"
     return f"{auth_type} {auth_value}"
+
+
+def _to_csv_str(values, delimiter: str = ","):
+    formatted_values = []
+    for v in values:
+        if isinstance(v, bool):
+            formatted_values.append(str(v).lower())
+        elif isinstance(v, (int, float)):
+            formatted_values.append(str(v))
+        else:
+            formatted_values.append(f'"{v}"')
+    return ",".join(formatted_values)
+
+
+def to_csv(items: Tuple[str, List[Any]], delimiter: str = ",") -> str:
+    """Convert items to csv format
+
+    Arguments:
+        items (Tuple[str, List[Any]]): List of items, where the first item
+          in tuple is the column name, and the second is a list of values.
+        delimiter (str): Field delimiter. Defaults to ","
+
+    Returns:
+        str: CSV output
+    """
+    columns = _to_csv_str([item[0] for item in items], delimiter=delimiter)
+
+    data = [item[1] for item in items]
+
+    item_len = len(data[0])
+    data_rows = []
+    for i in range(0, item_len):
+        data_rows.append(_to_csv_str([item[i] for item in data], delimiter=delimiter))
+
+    return "\n".join([columns, *data_rows])
