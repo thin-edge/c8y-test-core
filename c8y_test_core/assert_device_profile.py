@@ -71,9 +71,10 @@ class DeviceProfile(AssertDevice):
         assert device_id, "device id must not be empty"
 
         # Get the profile details from the given managed object
-        profile = self.context.client.inventory.get(profile_id)
+        profile = self.context.client.inventory.get(profile_id).to_full_json()
+
         fragments = {
-            "profileId": profile.id,
+            "profileId": profile_id,
             "profileName": profile["name"],
             "c8y_DeviceProfile": profile["c8y_DeviceProfile"],
         }
@@ -105,16 +106,17 @@ class DeviceProfile(AssertDevice):
         """
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
+        mo_data = mo.to_full_json()
 
-        profile = self.context.client.inventory.get(profile_id)
+        profile = self.context.client.inventory.get(profile_id).to_full_json()
 
         assert (
-            "c8y_Profile" in mo
+            "c8y_Profile" in mo_data
         ), "Managed object does not have a c8y_Profile fragment"
 
-        assert mo["c8y_Profile"]["profileId"] == profile["id"]
-        assert mo["c8y_Profile"]["profileName"] == profile["name"]
-        assert mo["c8y_Profile"]["profileExecuted"]
+        assert mo_data["c8y_Profile"]["profileId"] == profile_id
+        assert mo_data["c8y_Profile"]["profileName"] == profile["name"]
+        assert mo_data["c8y_Profile"]["profileExecuted"]
         return mo
 
     def assert_not_installed(
@@ -127,11 +129,12 @@ class DeviceProfile(AssertDevice):
         """
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
+        mo_data = mo.to_full_json()
 
-        if "c8y_Profile" not in mo:
-            return mo
+        if "c8y_Profile" not in mo_data:
+            return mo_data
 
-        profile = self.context.client.inventory.get(profile_id)
-        assert mo["c8y_Profile"]["profileId"] != profile["id"]
-        assert mo["c8y_Profile"]["profileName"] != profile["name"]
+        profile = self.context.client.inventory.get(profile_id).to_full_json()
+        assert mo_data["c8y_Profile"]["profileId"] != profile_id
+        assert mo_data["c8y_Profile"]["profileName"] != profile["name"]
         return mo
