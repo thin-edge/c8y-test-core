@@ -10,6 +10,7 @@ from c8y_test_core.assert_command import Command
 from c8y_test_core.assert_configuration import DeviceConfiguration
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_device_certificate import AssertDeviceCertificate
+from c8y_test_core.assert_device_profile import DeviceProfile
 from c8y_test_core.assert_device_registration import AssertDeviceRegistration
 from c8y_test_core.assert_alarms import Alarms
 from c8y_test_core.assert_events import Events
@@ -48,6 +49,7 @@ class DeviceManagement(AssertDevice):
         self.measurements = AssertMeasurements(context)
         self.operations = AssertOperations(context)
         self.software_management = SoftwareManagement(context)
+        self.device_profile = DeviceProfile(context)
 
     @property
     def c8y(self) -> CumulocityApi:
