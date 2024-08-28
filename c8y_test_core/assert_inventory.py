@@ -422,3 +422,30 @@ class AssertInventory(AssertDevice):
             ), f"Expected total device services count to be less than or equal to {max_count}"
 
         return services
+
+    def create_managed_object(
+        self,
+        type: Optional[str] = None,
+        name: Optional[str] = None,
+        owner: Optional[str] = None,
+        fragments: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> ManagedObject:
+        """Create a managed object
+
+        Args:
+            name (str, optional): Name
+            type (str, optional): Type
+            owner (str, optional): Owner
+            fragments (Dict[str, Any], optional): Additional fragments to include
+
+        Returns:
+            ManagedObject: The created managed object
+        """
+        if not fragments:
+            fragments = {}
+
+        mo = ManagedObject(
+            self.context.client, type=type, name=name, owner=owner, **fragments
+        ).create()
+        return mo
