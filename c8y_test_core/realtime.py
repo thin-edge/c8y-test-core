@@ -84,7 +84,7 @@ class Subscriber:
 
     @classmethod
     def to_inventory(cls, device_id: str, duration: int) -> JsonReader:
-        """Create a subscription to managedobjects/inventory for a device
+        """Create a subscription to managed objects/inventory for a device
 
         Args:
             device_id (str): device id to subscribe to

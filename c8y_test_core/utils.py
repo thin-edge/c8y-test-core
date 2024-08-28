@@ -36,7 +36,7 @@ def isolate_last_call_arg(mock: Mock, name: str, pos: int = None) -> Any:
         return args[pos]
     raise KeyError(
         f"Argument not found: '{name}'. "
-        f"Not given explcitely and position ({pos}) out of of bounds."
+        f"Not given explicitly and position ({pos}) out of of bounds."
     )
 
 
@@ -96,7 +96,7 @@ class RandomNameGenerator:
             # one verb
             groups.append("v/")
 
-            # use adjectives inbetween
+            # use adjectives in between
             groups.extend(["a/"] * (num - 2))
 
             # then one noun
