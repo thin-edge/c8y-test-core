@@ -12,7 +12,11 @@ class DeviceLogFile(AssertDevice):
     """Device log file assertions"""
 
     def assert_supported_types(
-        self, *types: str, include: Optional[bool] = True, mo: Optional[ManagedObject] = None, **kwargs
+        self,
+        *types: str,
+        include: Optional[bool] = True,
+        mo: Optional[ManagedObject] = None,
+        **kwargs,
     ) -> ManagedObject:
         """Assert presence of some supported log file types by checking the c8y_SupportedLogs
         fragment of the inventory managed object.

@@ -22,7 +22,9 @@ class InventoryFound(AssertionError):
 class AssertInventory(AssertDevice):
     """Inventory assertions"""
 
-    def assert_exists(self, inventory_id: Optional[str] = None, **kwargs) -> ManagedObject:
+    def assert_exists(
+        self, inventory_id: Optional[str] = None, **kwargs
+    ) -> ManagedObject:
         """Assert that an inventory managed object exists
         Args:
             inventory_id (str, optional): managed object to check if it exists. If None
