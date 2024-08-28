@@ -278,7 +278,7 @@ class AssertInventory(AssertDevice):
             if mo is not None:
                 mo_id = mo.id
             return self.context.client.get(
-                f"/inventory/managedObjects/{mo_id}/childDevices/{child_id}"
+                f"/inventory/managedObjects/{mo_id}/{child_type}/{child_id}"
             )
         except KeyError as ex:
             raise InventoryNotFound from ex
