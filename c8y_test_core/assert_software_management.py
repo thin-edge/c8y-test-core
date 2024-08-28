@@ -1,7 +1,7 @@
 """Software management"""
 import dataclasses
 import re
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from c8y_api.model import ManagedObject
 
@@ -75,7 +75,7 @@ class SoftwareManagement(AssertDevice):
         TYPE_MATCH = "TYPE_MATCH"
 
     def assert_software_installed(
-        self, *expected_software_list: Software, mo: ManagedObject = None, **kwargs
+        self, *expected_software_list: Software, mo: Optional[ManagedObject] = None, **kwargs
     ) -> Dict[_package_name, Dict[str, _package]]:
         """Assert that a list of software packages are installed.
         If the version is empty, then version matching is skipped.
@@ -134,7 +134,7 @@ class SoftwareManagement(AssertDevice):
         return installed_with_keys
 
     def assert_not_software_installed(
-        self, *unexpected_software_list: Software, mo: ManagedObject = None, **kwargs
+        self, *unexpected_software_list: Software, mo: Optional[ManagedObject] = None, **kwargs
     ):
         """Assert that a list of software packages are not installed.
         If the version is empty, then version matching is skipped.

@@ -1,4 +1,5 @@
 """Device availability and connection assertions"""
+from typing import Optional
 from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 
@@ -23,7 +24,7 @@ class AssertDeviceAvailability(AssertDevice):
 
     def assert_device_available(
         self,
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert that the device availability status (c8y_Availability.status)
@@ -39,7 +40,7 @@ class AssertDeviceAvailability(AssertDevice):
 
     def assert_device_unavailable(
         self,
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert that the device availability status (c8y_Availability.status)
@@ -55,7 +56,7 @@ class AssertDeviceAvailability(AssertDevice):
 
     def assert_device_maintenance(
         self,
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert that the device availability status (c8y_Availability.status)
@@ -71,7 +72,7 @@ class AssertDeviceAvailability(AssertDevice):
 
     def assert_device_connected(
         self,
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert that the device connection status (c8y_Availability.status)
@@ -86,7 +87,7 @@ class AssertDeviceAvailability(AssertDevice):
 
     def assert_device_disconnected(
         self,
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert that the device connection status (c8y_Connection.status)
