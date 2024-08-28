@@ -37,7 +37,7 @@ class DeviceConfiguration(AssertDevice):
     ) -> Operation:
         """Apply a configuration given a given contents or file and wait for the operation to complete.
 
-        This method is a convinience function to make it easier and quicker to apply configuration to a device.
+        This method is a convenience function to make it easier and quicker to apply configuration to a device.
 
         If the configuration does not contain a url, then a temporary file will be uploaded to Cumulocity and
         the url will be included in the configuration operation sent to the device.
@@ -57,9 +57,9 @@ class DeviceConfiguration(AssertDevice):
 
         # Create temporary file to upload to Cumulocity
         if file is not None or contents is not None:
-            tempname = "tempfile-" + RandomNameGenerator.random_name()
+            temp_name = "tempfile-" + RandomNameGenerator.random_name()
             with Binaries(self.context).new_binary(
-                name=tempname, file=file, contents=contents
+                name=temp_name, file=file, contents=contents
             ) as ref:
                 configuration.url = ref.url
                 operation = self.set_configuration(configuration, **kwargs)
