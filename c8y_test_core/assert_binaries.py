@@ -1,6 +1,7 @@
 """Binary assertions"""
 import contextlib
 import tempfile
+from typing import Optional, Union, List
 from pathlib import Path
 
 from c8y_api.model import Binary
@@ -25,10 +26,10 @@ class Binaries(AssertDevice):
     def new_binary(
         self,
         name: str,
-        binary_type: str = "",
-        file: str = None,
-        contents: str = None,
-        delete: bool = True,
+        binary_type: Optional[str] = "",
+        file: Optional[str] = None,
+        contents: Optional[Union[str, List]] = None,
+        delete: Optional[bool] = True,
         **kwargs,
     ):
         """Upload a binary and provide it to a context. The binary will be automatically

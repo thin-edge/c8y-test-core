@@ -1,5 +1,5 @@
 """Device configuration assertions"""
-from typing import List
+from typing import List, Optional
 from c8y_api.model import Operation, ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_binaries import Binaries
@@ -31,8 +31,8 @@ class DeviceConfiguration(AssertDevice):
     def apply_and_wait(
         self,
         configuration: Configuration,
-        contents: str = None,
-        file: str = None,
+        contents: Optional[str] = None,
+        file: Optional[str] = None,
         **kwargs,
     ) -> Operation:
         """Apply a configuration given a given contents or file and wait for the operation to complete.
@@ -43,7 +43,7 @@ class DeviceConfiguration(AssertDevice):
         the url will be included in the configuration operation sent to the device.
 
         Args:
-            configuration (str, optiona)
+            configuration (str)
             contents (str, optional): Contents to be sent to the device. Ignored if set to None.
             file (str, optional): Path to the file to be applied to the device. Ignored if set to None.
 
@@ -89,8 +89,8 @@ class DeviceConfiguration(AssertDevice):
     def assert_supported_types(
         self,
         types: List[str],
-        includes: bool = False,
-        mo: ManagedObject = None,
+        includes: Optional[bool] = False,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> List[str]:
         """Assert that the managed object has supported configuration

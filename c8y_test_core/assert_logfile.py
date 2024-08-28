@@ -1,5 +1,6 @@
 """Device logfile assertions"""
 from datetime import datetime, timedelta
+from typing import Optional
 from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_operation import AssertOperation
@@ -11,7 +12,7 @@ class DeviceLogFile(AssertDevice):
     """Device log file assertions"""
 
     def assert_supported_types(
-        self, *types: str, include: bool = True, mo: ManagedObject = None, **kwargs
+        self, *types: str, include: Optional[bool] = True, mo: Optional[ManagedObject] = None, **kwargs
     ) -> ManagedObject:
         """Assert presence of some supported log file types by checking the c8y_SupportedLogs
         fragment of the inventory managed object.
@@ -61,10 +62,10 @@ class DeviceLogFile(AssertDevice):
     def get_logfile(
         self,
         type: str,
-        date_from: datetime = None,
-        date_to: datetime = None,
-        maximum_lines: int = 100,
-        search_text: str = "",
+        date_from: Optional[datetime] = None,
+        date_to: Optional[datetime] = None,
+        maximum_lines: Optional[int] = 100,
+        search_text: Optional[str] = "",
         **kwargs,
     ) -> AssertOperation:
         """Create a log file request operation c8y_LogfileRequest

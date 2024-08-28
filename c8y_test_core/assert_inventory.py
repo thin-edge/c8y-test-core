@@ -1,7 +1,7 @@
 """Inventory assertions
 """
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.compare import compare_dataclass
@@ -22,7 +22,7 @@ class InventoryFound(AssertionError):
 class AssertInventory(AssertDevice):
     """Inventory assertions"""
 
-    def assert_exists(self, inventory_id: str = None, **kwargs) -> ManagedObject:
+    def assert_exists(self, inventory_id: Optional[str] = None, **kwargs) -> ManagedObject:
         """Assert that an inventory managed object exists
         Args:
             inventory_id (str, optional): managed object to check if it exists. If None
@@ -36,7 +36,7 @@ class AssertInventory(AssertDevice):
         except KeyError as ex:
             raise InventoryNotFound from ex
 
-    def assert_not_exists(self, inventory_id: str = None, **kwargs) -> None:
+    def assert_not_exists(self, inventory_id: Optional[str] = None, **kwargs) -> None:
         """Assert that an inventory managed object does not exist
 
         Args:
@@ -109,7 +109,7 @@ class AssertInventory(AssertDevice):
     def assert_contains_fragment_values(
         self,
         fragments: Dict[str, Any],
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert the present and the values of fragments in the device managed object"""
@@ -131,7 +131,7 @@ class AssertInventory(AssertDevice):
     def assert_contains_fragments(
         self,
         fragments: List[str],
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert the present of fragments in the device managed object (regardless of value)"""
@@ -148,7 +148,7 @@ class AssertInventory(AssertDevice):
     def assert_missing_fragments(
         self,
         fragments: List[str],
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert the absence of fragments in a managed object
@@ -172,7 +172,7 @@ class AssertInventory(AssertDevice):
         self,
         reference_object: Dict[str, Any],
         fragment: str,
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
         """Assert that the device managed object has changed from the given reference object.
@@ -245,9 +245,9 @@ class AssertInventory(AssertDevice):
     def assert_relationship(
         self,
         child_identity: str,
-        child_identity_type: str = "c8y_Serial",
-        child_type: str = "childDevices",
-        mo: ManagedObject = None,
+        child_identity_type: Optional[str] = "c8y_Serial",
+        child_type: Optional[str] = "childDevices",
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> List[Dict[str, Any]]:
         """Assert that a child identity is a child of a give managed object
@@ -283,7 +283,7 @@ class AssertInventory(AssertDevice):
 
     def delete_device_and_user(
         self,
-        mo: ManagedObject = None,
+        mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> None:
         """Assert device user and all child devices. The device user is then deleted afterwards"""
@@ -317,11 +317,11 @@ class AssertInventory(AssertDevice):
     def get_services(
         self,
         inventory_id,
-        service_type: str = None,
-        status: str = None,
-        name: str = None,
-        query: str = None,
-        page_size: int = 100,
+        service_type: Optional[str] = None,
+        status: Optional[str] = None,
+        name: Optional[str] = None,
+        query: Optional[str] = None,
+        page_size: Optional[int] = 100,
     ) -> List[ManagedObject]:
         """Get services attached to a specific device
 
@@ -378,12 +378,12 @@ class AssertInventory(AssertDevice):
 
     def assert_services(
         self,
-        inventory_id: str = None,
-        min_count: int = 1,
-        max_count: int = None,
-        service_type: str = None,
-        status: str = None,
-        name: str = None,
+        inventory_id: Optional[str] = None,
+        min_count: Optional[int] = 1,
+        max_count: Optional[int] = None,
+        service_type: Optional[str] = None,
+        status: Optional[str] = None,
+        name: Optional[str] = None,
         **kwargs,
     ) -> List[ManagedObject]:
         """Assert services attached to a specific device
