@@ -1,6 +1,5 @@
 """Device registration assertions and actions"""
 import logging
-import secrets
 import time
 from dataclasses import dataclass
 from typing import Optional
@@ -8,7 +7,7 @@ from c8y_api._base_api import UnauthorizedError
 from c8y_api.app import CumulocityApi
 from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
-from c8y_test_core.utils import to_csv
+from c8y_test_core.utils import to_csv, random_password
 
 
 @dataclass
@@ -75,6 +74,7 @@ class AssertDeviceRegistration(AssertDevice):
         external_type: Optional[str] = "c8y_Serial",
         name: Optional[str] = None,
         device_type: Optional[str] = "thin-edge.io",
+        password: Optional[str] = None,
         **kwargs,
     ) -> DeviceCredentials:
         """Bulk device registration for device that require
@@ -87,9 +87,9 @@ class AssertDeviceRegistration(AssertDevice):
             type (Optional[str]): Type of the device. Defaults to thin-edge.io
         """
         name = name or external_id
-        password = secrets.token_urlsafe(14)
-        symbols = "".join([secrets.choice(".$-?@!") for i in range(0, 2)])
-        password = password + symbols
+
+        if not password:
+            password = random_password(16)
 
         registration_body = to_csv(
             [
