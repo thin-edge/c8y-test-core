@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import base64
+import random
+import secrets
 from typing import List, Set, Any, Tuple
 from unittest.mock import Mock
 
@@ -151,3 +153,26 @@ def to_csv(items: Tuple[str, List[Any]], delimiter: str = ",") -> str:
         data_rows.append(_to_csv_str([item[i] for item in data], delimiter=delimiter))
 
     return "\n".join([columns, *data_rows])
+
+
+def random_password(size: int = 16) -> str:
+    """Generate password which meets the Cumulocity IoT requirements
+
+    This is only intended for test purposes
+
+    Arguments:
+        size (int, optional): Password length
+
+    Returns:
+        str: Randomly generated password
+    """
+    # 6 characters are used to meet the uppercase/lowercase, digit and symbol requirement
+    rand_size = size - 6
+    rand_password = secrets.token_urlsafe(rand_size)
+    uppercase = "".join(
+        [secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for i in range(0, 2)]
+    )
+    digits = "".join([secrets.choice("0123456789") for i in range(0, 2)])
+    symbols = "".join([secrets.choice(".$-?@!") for i in range(0, 2)])
+    password = rand_password + uppercase + digits + symbols
+    return "".join(random.sample(password, len(password)))

@@ -1,11 +1,13 @@
 """Device registration assertions and actions"""
 import logging
-import secrets
 import time
 from dataclasses import dataclass
 from typing import Optional
+from c8y_api._base_api import UnauthorizedError
+from c8y_api.app import CumulocityApi
+from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
-from c8y_test_core.utils import to_csv
+from c8y_test_core.utils import to_csv, random_password
 
 
 @dataclass
@@ -19,8 +21,52 @@ class DeviceCredentials:
 log = logging.getLogger()
 
 
+class DeviceNotFound(AssertionError):
+    """Device not found"""
+
+
 class AssertDeviceRegistration(AssertDevice):
     """Assertions"""
+
+    def assert_valid_credentials(
+        self,
+        username: str,
+        password: str,
+        external_id: Optional[str] = None,
+        external_type: Optional[str] = "c8y_Serial",
+    ) -> ManagedObject:
+        """Assert that given device credentials are valid
+
+        Arguments:
+            username (str): Device username
+            password (str): Device password
+            external_id (str, optional): Device external id. Defaults to the username (without the device_ prefix)
+            external_type (str, optional): Device external id type. Defaults to c8y_Serial
+        """
+        username_without_tenant = username.split("/", 1)[-1]
+        client = CumulocityApi(
+            base_url=self.context.client.base_url,
+            tenant_id=self.context.client.tenant_id,
+            username=username_without_tenant,
+            password=password,
+        )
+
+        if not external_id:
+            external_id = username_without_tenant
+            if external_id.startswith("device_"):
+                external_id = external_id[len("device_") :]
+
+        try:
+            mo = client.identity.get_object(
+                external_id=external_id, external_type=external_type
+            )
+        except UnauthorizedError as ex:
+            raise AssertionError() from ex
+        except KeyError as ex:
+            raise DeviceNotFound() from ex
+
+        assert mo.id
+        return mo
 
     def bulk_register_with_basic_auth(
         self,
@@ -28,6 +74,7 @@ class AssertDeviceRegistration(AssertDevice):
         external_type: Optional[str] = "c8y_Serial",
         name: Optional[str] = None,
         device_type: Optional[str] = "thin-edge.io",
+        password: Optional[str] = None,
         **kwargs,
     ) -> DeviceCredentials:
         """Bulk device registration for device that require
@@ -40,9 +87,9 @@ class AssertDeviceRegistration(AssertDevice):
             type (Optional[str]): Type of the device. Defaults to thin-edge.io
         """
         name = name or external_id
-        password = secrets.token_urlsafe(14)
-        symbols = "".join([secrets.choice(".$-?@!") for i in range(0, 2)])
-        password = password + symbols
+
+        if not password:
+            password = random_password(16)
 
         registration_body = to_csv(
             [
@@ -70,6 +117,12 @@ class AssertDeviceRegistration(AssertDevice):
         if self.context.client.tenant_id:
             username = f"{self.context.client.tenant_id}/device_{external_id}"
 
+        mo = self.assert_valid_credentials(
+            username, password, external_id, external_type
+        )
+        self.context.log.info(
+            "Device managed object. id=%s, mo=%s", mo.id, mo.to_json()
+        )
         return DeviceCredentials(username, password)
 
     def register_with_basic_auth(self, external_id: str, timeout: float = 60, **kwargs):
