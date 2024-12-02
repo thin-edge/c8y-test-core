@@ -1,5 +1,6 @@
 """Device registration assertions and actions"""
 import logging
+import random
 import secrets
 import time
 from dataclasses import dataclass
@@ -17,6 +18,32 @@ class DeviceCredentials:
 
 
 log = logging.getLogger()
+
+
+def random_password(password_len=16) -> str:
+    """Generate random password the fulfils the default
+    Cumulocity password policy.
+
+    Args:
+        password_len (int, optional): Password length. Defaults to 16.
+
+    Returns:
+        str: Random password
+    """
+    lowercase = "".join(
+        [secrets.choice("abcdefghijklmnopqrstuvwxyz") for i in range(0, 2)]
+    )
+    uppercase = "".join(
+        [secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for i in range(0, 2)]
+    )
+    digits = "".join([secrets.choice("0123456789") for i in range(0, 2)])
+    symbols = "".join([secrets.choice(".$-?@!") for i in range(0, 2)])
+    password_requirements = "".join([lowercase, uppercase, digits, symbols])
+    password = password_requirements + secrets.token_urlsafe(
+        password_len - len(password_requirements) - 2
+    )
+    # randomize order of password
+    return "".join(random.sample(password, len(password)))
 
 
 class AssertDeviceRegistration(AssertDevice):
@@ -40,10 +67,7 @@ class AssertDeviceRegistration(AssertDevice):
             type (Optional[str]): Type of the device. Defaults to thin-edge.io
         """
         name = name or external_id
-        password = secrets.token_urlsafe(14)
-        symbols = "".join([secrets.choice(".$-?@!") for i in range(0, 2)])
-        password = password + symbols
-
+        password = random_password()
         registration_body = to_csv(
             [
                 ("ID", [external_id]),
