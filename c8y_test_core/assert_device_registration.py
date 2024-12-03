@@ -55,6 +55,7 @@ class AssertDeviceRegistration(AssertDevice):
         external_type: Optional[str] = "c8y_Serial",
         name: Optional[str] = None,
         device_type: Optional[str] = "thin-edge.io",
+        auth_type: Optional[str] = "BASIC",
         **kwargs,
     ) -> DeviceCredentials:
         """Bulk device registration for device that require
@@ -65,6 +66,8 @@ class AssertDeviceRegistration(AssertDevice):
             external_type (str): External type. Defaults to c8y_Serial
             name (Optional[str]): Name of the device. Defaults to the external_id
             type (Optional[str]): Type of the device. Defaults to thin-edge.io
+            auth_type (Optional[str]): Type of the authentication type.
+                Either 'BASIC' or 'CREDENTIALS'. Defaults to 'BASIC'
         """
         name = name or external_id
         password = random_password()
@@ -72,7 +75,7 @@ class AssertDeviceRegistration(AssertDevice):
             [
                 ("ID", [external_id]),
                 ("IDTYPE", [external_type]),
-                ("AUTH_TYPE", ["BASIC"]),
+                ("AUTH_TYPE", [auth_type]),
                 ("CREDENTIALS", [password]),
                 ("TYPE", [device_type]),
                 ("NAME", [name]),
