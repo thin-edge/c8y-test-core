@@ -7,6 +7,7 @@ from typing import List, Union
 from c8y_api.model import Event
 
 from c8y_test_core.assert_device import AssertDevice
+from c8y_test_core.errors import FinalAssertionError
 from . import compare
 
 
@@ -40,9 +41,10 @@ class Events(AssertDevice):
             List[Event]: List of matching events
         """
         source = kwargs.pop("source", self.context.device_id)
-        assert (
-            source
-        ), "source and the current device context is empty. One of these values must be set!"
+        if not source:
+            FinalAssertionError(
+                "source and the current device context is empty. One of these values must be set!"
+            )
 
         fragment = kwargs.pop("fragment", None)
         if with_attachment:

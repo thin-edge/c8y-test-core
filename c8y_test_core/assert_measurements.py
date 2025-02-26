@@ -4,6 +4,7 @@ from typing import Any, List
 from c8y_api.model import ManagedObject, Measurement
 
 from c8y_test_core.assert_device import AssertDevice
+from c8y_test_core.errors import FinalAssertionError
 
 
 class AssertMeasurements(AssertDevice):
@@ -58,9 +59,10 @@ class AssertMeasurements(AssertDevice):
             List[Any]: List of measurements
         """
         source = kwargs.pop("source", self.context.device_id) or None
-        assert (
-            source
-        ), "source and the current device context is empty. One of these values must be set!"
+        if not source:
+            FinalAssertionError(
+                "source and the current device context is empty. One of these values must be set!"
+            )
         page_size = kwargs.pop("pageSize", 2000)
 
         measurements = self.context.client.measurements.get_all(
