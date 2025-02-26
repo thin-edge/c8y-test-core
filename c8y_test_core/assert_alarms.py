@@ -5,6 +5,7 @@ from typing import List
 from c8y_api.model import Alarm
 
 from c8y_test_core.assert_device import AssertDevice
+from c8y_test_core.errors import FinalAssertionError
 
 
 class AlarmNotFound(AssertionError):
@@ -35,9 +36,10 @@ class Alarms(AssertDevice):
             List[Alarm]: List of matching alarms
         """
         source = kwargs.pop("source", self.context.device_id)
-        assert (
-            source
-        ), "source and the current device context is empty. One of these values must be set!"
+        if not source:
+            FinalAssertionError(
+                "source and the current device context is empty. One of these values must be set!"
+            )
         alarms = self.context.client.alarms.get_all(source=source, **kwargs)
 
         matching_alarms = alarms
