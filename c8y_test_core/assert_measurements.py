@@ -58,6 +58,9 @@ class AssertMeasurements(AssertDevice):
             List[Any]: List of measurements
         """
         source = kwargs.pop("source", self.context.device_id) or None
+        assert (
+            source
+        ), "source and the current device context is empty. One of these values must be set!"
         page_size = kwargs.pop("pageSize", 2000)
 
         measurements = self.context.client.measurements.get_all(
