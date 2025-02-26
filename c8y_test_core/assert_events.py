@@ -42,7 +42,7 @@ class Events(AssertDevice):
         """
         source = kwargs.pop("source", self.context.device_id)
         if not source:
-            FinalAssertionError(
+            raise FinalAssertionError(
                 "source and the current device context is empty. One of these values must be set!"
             )
 

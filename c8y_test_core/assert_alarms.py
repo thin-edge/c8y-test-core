@@ -37,7 +37,7 @@ class Alarms(AssertDevice):
         """
         source = kwargs.pop("source", self.context.device_id)
         if not source:
-            FinalAssertionError(
+            raise FinalAssertionError(
                 "source and the current device context is empty. One of these values must be set!"
             )
         alarms = self.context.client.alarms.get_all(source=source, **kwargs)
