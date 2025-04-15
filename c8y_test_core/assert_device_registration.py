@@ -17,6 +17,14 @@ class DeviceCredentials:
     password: str
 
 
+@dataclass
+class DeviceSimpleEnrollCredentials:
+    """Device enrollment credentials for the Cumulocity certificate-authority feature"""
+
+    external_id: str
+    one_time_password: str
+
+
 log = logging.getLogger()
 
 
@@ -98,6 +106,49 @@ class AssertDeviceRegistration(AssertDevice):
             username = f"{self.context.client.tenant_id}/device_{external_id}"
 
         return DeviceCredentials(username, password)
+
+    def bulk_register_with_ca(
+        self,
+        external_id: str,
+        external_type: Optional[str] = "c8y_Serial",
+        name: Optional[str] = None,
+        device_type: Optional[str] = "thin-edge.io",
+        **kwargs,
+    ) -> DeviceCredentials:
+        """Bulk device registration using the Cumulocity
+        certificate-authority feature
+
+        Arguments:
+            external_id (str): External id
+            external_type (str): External type. Defaults to c8y_Serial
+            name (Optional[str]): Name of the device. Defaults to the external_id
+            type (Optional[str]): Type of the device. Defaults to thin-edge.io
+        """
+        name = name or external_id
+        one_time_password = random_password()
+        registration_body = to_csv(
+            [
+                ("ID", [external_id]),
+                ("IDTYPE", [external_type]),
+                ("AUTH_TYPE", ["CERTIFICATES"]),
+                ("ENROLLMENT_OTP", [one_time_password]),
+                ("TYPE", [device_type]),
+                ("NAME", [name]),
+                ("com_cumulocity_model_Agent.active", [True]),
+            ]
+        )
+
+        resp = self.context.client.post_file(
+            "/devicecontrol/bulkNewDeviceRequests",
+            registration_body.encode("utf-8"),
+            accept="application/json",
+        )
+        log.info("Registration response: %s", resp)
+        assert resp["numberOfSuccessful"] == resp["numberOfAll"], (
+            "Failed to register device\n" f"response:\n{resp}"
+        )
+
+        return DeviceSimpleEnrollCredentials(external_id, one_time_password)
 
     def register_with_basic_auth(self, external_id: str, timeout: float = 60, **kwargs):
         """Register a single device using the basic auth
