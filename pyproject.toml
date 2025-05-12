@@ -24,7 +24,7 @@ dependencies = [
     "c8y-api >= 1.10, < 1.11",
     "python-dotenv >= 1.0.0, < 1.1.0",
     "pyyaml >= 6.0, < 7.0",
-    "requests >= 2.31.0, < 2.32.0",
+    "requests >= 2.32.0, < 2.33.0",
     "tenacity >= 8.1.0, < 8.2.0",
     "randomname >= 0.1.5, < 0.2.0",
 ]
