@@ -45,11 +45,17 @@ def random_password(password_len=16) -> str:
         [secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for i in range(0, 2)]
     )
     digits = "".join([secrets.choice("0123456789") for i in range(0, 2)])
-    symbols = "".join([secrets.choice(".$-?@!") for i in range(0, 2)])
+    # use url safe symbols
+    symbols = "".join([secrets.choice("$-_.+!*'(),") for i in range(0, 2)])
     password_requirements = "".join([lowercase, uppercase, digits, symbols])
     password = password_requirements + secrets.token_urlsafe(
         password_len - len(password_requirements) - 2
     )
+    # avoid starting the string with a dash as it can cause cli parsing problems for some
+    # libraries
+    if password.startswith("-"):
+        password = "_" + password[1:]
+
     # randomize order of password
     return "".join(random.sample(password, len(password)))
 
