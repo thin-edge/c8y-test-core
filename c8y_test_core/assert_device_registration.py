@@ -51,13 +51,15 @@ def random_password(password_len=16) -> str:
     password = password_requirements + secrets.token_urlsafe(
         password_len - len(password_requirements) - 2
     )
-    # avoid starting the string with a dash as it can cause cli parsing problems for some
-    # libraries
-    if password.startswith("-"):
-        password = "_" + password[1:]
 
     # randomize order of password
-    return "".join(random.sample(password, len(password)))
+    value = "".join(random.sample(password, len(password)))
+
+    # avoid starting the string with a dash as it can cause cli parsing problems for some
+    # libraries
+    if value.startswith("-"):
+        value = "_" + value[1:]
+    return value
 
 
 class AssertDeviceRegistration(AssertDevice):
