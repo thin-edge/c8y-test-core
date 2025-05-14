@@ -46,7 +46,7 @@ def random_password(password_len=16) -> str:
     )
     digits = "".join([secrets.choice("0123456789") for i in range(0, 2)])
     # use url safe symbols
-    symbols = "".join([secrets.choice("$-_.+!*'(),") for i in range(0, 2)])
+    symbols = "".join([secrets.choice("$-_.+!*(),") for i in range(0, 2)])
     password_requirements = "".join([lowercase, uppercase, digits, symbols])
     password = password_requirements + secrets.token_urlsafe(
         password_len - len(password_requirements) - 2
