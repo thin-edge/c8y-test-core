@@ -19,8 +19,8 @@ class TestCSVConversion(unittest.TestCase):
         )
 
         expected = """
-"col1","col2","col3","col4"
-"hello",true,false,1.234
+"col1"\t"col2"\t"col3"\t"col4"
+"hello"\ttrue\tfalse\t1.234
 """.strip()
         assert output == expected
 
@@ -35,9 +35,9 @@ class TestCSVConversion(unittest.TestCase):
         )
 
         expected = """
-"col1","col2","col3","col4"
-"hello",true,false,1.234
-"again",false,true,10000001
+"col1"\t"col2"\t"col3"\t"col4"
+"hello"\ttrue\tfalse\t1.234
+"again"\tfalse\ttrue\t10000001
 """.strip()
         assert output == expected
 

@@ -118,7 +118,7 @@ def build_auth_string(auth_value: str) -> str:
     return f"{auth_type} {auth_value}"
 
 
-def _to_csv_str(values, delimiter: str = ","):
+def _to_csv_str(values, delimiter: str = "\t"):
     formatted_values = []
     for v in values:
         if isinstance(v, bool):
@@ -127,10 +127,10 @@ def _to_csv_str(values, delimiter: str = ","):
             formatted_values.append(str(v))
         else:
             formatted_values.append(f'"{v}"')
-    return ",".join(formatted_values)
+    return delimiter.join(formatted_values)
 
 
-def to_csv(items: Tuple[str, List[Any]], delimiter: str = ",") -> str:
+def to_csv(items: Tuple[str, List[Any]], delimiter: str = "\t") -> str:
     """Convert items to csv format
 
     Arguments:
