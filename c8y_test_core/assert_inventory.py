@@ -285,35 +285,43 @@ class AssertInventory(AssertDevice):
 
     def delete_device_and_user(
         self,
-        mo: Optional[ManagedObject] = None,
+        external_id: str,
+        external_type: Optional[str] = "c8y_Serial",
         **kwargs,
     ) -> None:
         """Assert device user and all child devices. The device user is then deleted afterwards"""
 
         try:
-            if mo is None:
-                mo = self.context.client.inventory.get(self.context.device_id)
-
+            mo_id = self.context.client.identity.get_id(external_id, external_type)
             log.info(
                 "Removing managed object and all child devices. id=%s",
-                mo.id,
+                mo_id,
             )
-
             self.context.client.delete(
-                f"/inventory/managedObjects/{mo.id}",
+                f"/inventory/managedObjects/{mo_id}",
                 params={
                     "cascade": True,
                     "withDeviceUser": False,
                 },
             )
-
-            log.info("Removing device user. name=%s", mo.owner)
-            tenant_id = self.context.client.tenant_id
-            self.context.client.delete(f"/user/{tenant_id}/users/{mo.owner}")
         except KeyError as ex:
             log.info("Device has already been removed. %s", ex)
         except Exception as ex:
             log.error("Could not delete device. %s", ex)
+            raise
+
+        # delete the device user
+        username = f"device_{external_id}"
+        try:
+            log.info("Removing device user. name=%s", username)
+            tenant_id = self.context.client.tenant_id
+            self.context.client.delete(f"/user/{tenant_id}/users/{username}")
+        except KeyError as ex:
+            log.info(
+                "Device user has already been removed. name=%s, ex=%s", username, ex
+            )
+        except Exception as ex:
+            log.error("Could not delete device user. name=%s, ex=%s", username, ex)
             raise
 
     def get_services(
