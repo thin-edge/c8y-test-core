@@ -1,6 +1,7 @@
 """Device management assertions
 """
 import logging
+from typing import Optional
 
 from c8y_api import CumulocityApi
 
@@ -56,6 +57,7 @@ class DeviceManagement(AssertDevice):
     @property
     def c8y(self) -> CumulocityApi:
         """Shortcut to context.client"""
+        assert self.context.client, "context.client is empty"
         return self.context.client
 
     def configure_retries(self, **kwargs):
@@ -91,9 +93,9 @@ class DeviceManagement(AssertDevice):
 
 def create_context_from_identity(
     c8y: CumulocityApi,
-    device_id: str = None,
-    external_id: str = None,
-    external_type: str = None,
+    device_id: str = "",
+    external_id: Optional[str] = None,
+    external_type: Optional[str] = None,
 ) -> "DeviceManagement":
     """Create a context from a device identity"""
     context = AssertContext(client=c8y, device_id=device_id, log=logging.getLogger())

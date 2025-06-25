@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import base64
-from typing import List, Set, Any, Tuple
+from typing import List, Set, Any, Optional, Tuple
 from unittest.mock import Mock
 
 import randomname
@@ -12,10 +12,10 @@ from c8y_api.model._base import CumulocityObject
 
 def get_ids(objs: List[CumulocityObject]) -> Set[str]:
     """Isolate the ID from a list of database objects."""
-    return {o.id for o in objs}
+    return {o.id for o in objs if o.id is not None}
 
 
-def isolate_last_call_arg(mock: Mock, name: str, pos: int = None) -> Any:
+def isolate_last_call_arg(mock: Mock, name: str, pos: Optional[int] = None) -> Any:
     """Isolate arguments of the last call to a mock.
     The argument can be specified by name and by position.
     Args:
@@ -30,6 +30,7 @@ def isolate_last_call_arg(mock: Mock, name: str, pos: int = None) -> Any:
     """
     mock.assert_called()
     args, kwargs = mock.call_args
+    pos = pos if pos is not None else 0
     if name in kwargs:
         return kwargs[name]
     if len(args) > pos:
@@ -40,7 +41,9 @@ def isolate_last_call_arg(mock: Mock, name: str, pos: int = None) -> Any:
     )
 
 
-def isolate_all_call_args(mock: Mock, name: str, pos: int = None) -> List[Any]:
+def isolate_all_call_args(
+    mock: Mock, name: str, pos: Optional[int] = None
+) -> List[Any]:
     """Isolate arguments of all calls to a mock.
     The argument can be specified by name and by position.
     Args:
@@ -55,6 +58,7 @@ def isolate_all_call_args(mock: Mock, name: str, pos: int = None) -> List[Any]:
     """
     mock.assert_called()
     result = []
+    pos = pos if pos is not None else 0
     for args, kwargs in mock.call_args_list:
         if name in kwargs:
             result.append(kwargs[name])
@@ -130,7 +134,7 @@ def _to_csv_str(values, delimiter: str = "\t"):
     return delimiter.join(formatted_values)
 
 
-def to_csv(items: Tuple[str, List[Any]], delimiter: str = "\t") -> str:
+def to_csv(items: List[Tuple[str, List[Any]]], delimiter: str = "\t") -> str:
     """Convert items to csv format
 
     Arguments:

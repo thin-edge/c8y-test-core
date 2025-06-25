@@ -2,6 +2,7 @@
 """
 import logging
 import os
+from typing import Optional
 
 from c8y_api._auth import HTTPBearerAuth
 from c8y_api.app import CumulocityApi, _CumulocityAppBase
@@ -65,7 +66,7 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
 
     def __init__(
         self,
-        application_key: str = None,
+        application_key: Optional[str] = None,
         cache_size: int = 100,
         cache_ttl: int = 3600,
         timeout: float = 60,

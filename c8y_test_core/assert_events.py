@@ -2,7 +2,7 @@
 import hashlib
 import re
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 from c8y_api.model import Event
 
@@ -22,10 +22,10 @@ class Events(AssertDevice):
 
     def assert_count(
         self,
-        expected_text: str = None,
-        min_matches: int = 1,
-        max_matches: int = None,
-        with_attachment: bool = None,
+        expected_text: Optional[str] = None,
+        min_matches: Optional[int] = 1,
+        max_matches: Optional[int] = None,
+        with_attachment: Optional[bool] = None,
         **kwargs,
     ) -> List[Event]:
         """Assert a minimum count of matches events.
@@ -40,6 +40,7 @@ class Events(AssertDevice):
         Returns:
             List[Event]: List of matching events
         """
+        min_matches = min_matches if min_matches is not None else 1
         source = kwargs.pop("source", self.context.device_id)
         if not source:
             raise FinalAssertionError(
@@ -99,8 +100,8 @@ class Events(AssertDevice):
     def assert_attachment_info(
         self,
         event: Union[Event, str],
-        expected_name_pattern: str = None,
-        expected_type_pattern: str = None,
+        expected_name_pattern: Optional[str] = None,
+        expected_type_pattern: Optional[str] = None,
         **kwargs,
     ) -> Event:
         """Assert that the attachment meta information matches
@@ -140,10 +141,10 @@ class Events(AssertDevice):
     def assert_attachment(
         self,
         event_id: str,
-        expected_contents: str = None,
-        expected_pattern: str = None,
-        expected_size_min: int = None,
-        expected_md5: str = None,
+        expected_contents: Optional[str] = None,
+        expected_pattern: Optional[str] = None,
+        expected_size_min: Optional[int] = None,
+        expected_md5: Optional[str] = None,
         encoding: str = "utf8",
         **kwargs,
     ) -> bytes:
@@ -186,7 +187,7 @@ class Events(AssertDevice):
             # Check if user provide the checksum as a file or not
             if Path(expected_md5).is_file():
                 reference_file = expected_md5
-                with open(reference_file, 'rb') as file:
+                with open(reference_file, "rb") as file:
                     file_hash = hashlib.md5()
                     while chunk := file.read(8192):
                         file_hash.update(chunk)

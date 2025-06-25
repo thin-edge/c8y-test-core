@@ -63,8 +63,7 @@ class DeviceConfiguration(AssertDevice):
             ) as ref:
                 configuration.url = ref.url
                 operation = self.set_configuration(configuration, **kwargs)
-                operation.assert_success()
-                return operation
+                return operation.assert_success()
 
         raise ValueError("User must provide either file or contents")
 

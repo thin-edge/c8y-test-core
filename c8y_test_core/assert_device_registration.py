@@ -1,4 +1,5 @@
 """Device registration assertions and actions"""
+import io
 import logging
 import random
 import secrets
@@ -104,7 +105,7 @@ class AssertDeviceRegistration(AssertDevice):
 
         resp = self.context.client.post_file(
             "/devicecontrol/bulkNewDeviceRequests",
-            registration_body.encode("utf-8"),
+            io.BytesIO(registration_body.encode("utf-8")),
             accept="application/json",
         )
         log.info("Registration response: %s", resp)
@@ -159,7 +160,7 @@ class AssertDeviceRegistration(AssertDevice):
 
         resp = self.context.client.post_file(
             "/devicecontrol/bulkNewDeviceRequests",
-            registration_body.encode("utf-8"),
+            io.BytesIO(registration_body.encode("utf-8")),
             accept="application/json",
         )
         log.info("Registration response: %s", resp)

@@ -1,7 +1,7 @@
 """Global fixtures"""
 import threading
 import time
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 class RepeatTimer(threading.Thread):
@@ -11,12 +11,12 @@ class RepeatTimer(threading.Thread):
     def __init__(
         self,
         target: Any,
-        args: List[Any] = None,
-        kwargs: Dict[str, Any] = None,
+        args: Optional[List[Any]] = None,
+        kwargs: Optional[Dict[str, Any]] = None,
         delay: float = 0.0,
         interval: float = 10.0,
-        count: int = None,
-        event: threading.Event = None,
+        count: Optional[int] = None,
+        event: Optional[threading.Event] = None,
     ):
         threading.Thread.__init__(self)
         self.stopped = event or threading.Event()

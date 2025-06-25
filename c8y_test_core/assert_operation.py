@@ -27,6 +27,7 @@ class AssertOperation:
 
     def fetch_operation(self):
         """Refresh the operation by fetching it again from the platform"""
+        assert self.operation.id, "operation id is empty"
         self.operation = self.context.client.operations.get(self.operation.id)
         return self
 

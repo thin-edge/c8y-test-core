@@ -8,11 +8,17 @@ from tenacity import (
     RetryError,
     Retrying,
     retry,
+    RetryCallState,
+)
+from tenacity.wait import (
+    wait_fixed,
+)
+from tenacity.stop import (
+    stop_after_delay,
+)
+from tenacity.retry import (
     retry_if_exception_type,
     retry_if_not_exception_type,
-    stop_after_delay,
-    wait_fixed,
-    RetryCallState,
 )
 from requests.exceptions import RequestException
 
@@ -79,10 +85,9 @@ def after_failed_attempt(retry_state: RetryCallState):
 
 def retrier(func, *args, **kwargs):
     attempt = None
+    wait = float(kwargs.pop("wait", 2))
+    timeout = float(kwargs.pop("timeout", 30))
     try:
-        wait = float(kwargs.pop("wait", 2))
-        timeout = float(kwargs.pop("timeout", 30))
-
         for attempt in Retrying(
             retry=(
                 retry_if_exception_type((AssertionError, RequestException, OSError))
@@ -112,9 +117,11 @@ def retrier(func, *args, **kwargs):
         raise ex
     except Exception as ex:
         # Append additional context information
-        message = (
-            f"Retries ended. duration={attempt.retry_state.seconds_since_start:.3f}s, "
-            f"attempts={attempt.retry_state.attempt_number}, "
-            f"timeout={timeout:.3f}s, wait={wait:.3f}s"
-        )
-        raise ex from AssertionError(message)
+        if attempt:
+            message = (
+                f"Retries ended. duration={attempt.retry_state.seconds_since_start:.3f}s, "
+                f"attempts={attempt.retry_state.attempt_number}, "
+                f"timeout={timeout:.3f}s, wait={wait:.3f}s"
+            )
+            raise ex from AssertionError(message)
+        raise ex from AssertionError("Retries ended")

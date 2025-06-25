@@ -38,7 +38,7 @@ class DeviceProfile(AssertDevice):
         contents = {
             "software": [],
             "configuration": [],
-            **profile,
+            **(profile or {}),
         }
 
         if firmware:
@@ -132,7 +132,7 @@ class DeviceProfile(AssertDevice):
         mo_data = mo.to_full_json()
 
         if "c8y_Profile" not in mo_data:
-            return mo_data
+            return mo
 
         profile = self.context.client.inventory.get(profile_id).to_full_json()
         assert mo_data["c8y_Profile"]["profileId"] != profile_id

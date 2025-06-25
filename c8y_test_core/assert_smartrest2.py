@@ -1,11 +1,9 @@
 """SmartREST 2.0 assertions
 """
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
-from c8y_test_core.compare import compare_dataclass
-from c8y_test_core.errors import FinalAssertionError
 
 
 log = logging.getLogger()

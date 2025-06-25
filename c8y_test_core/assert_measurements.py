@@ -1,7 +1,5 @@
 """Measurement assertions"""
-from typing import Any, List
-
-from c8y_api.model import ManagedObject, Measurement
+from typing import Any, List, Optional
 
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.errors import FinalAssertionError
@@ -18,7 +16,7 @@ class AssertMeasurements(AssertDevice):
 
     def assert_supported_series_contains(
         self, *expected_series: str, **kwargs
-    ) -> ManagedObject:
+    ) -> List[str]:
         """Assert presence of a subset of series in the supported series list"""
         missing = []
         current_series = self._get_supported_series()
@@ -29,22 +27,24 @@ class AssertMeasurements(AssertDevice):
         assert (
             len(missing) == 0
         ), f"Device is missing some series. wanted={expected_series}, got={current_series}"
+        return current_series
 
     def assert_supported_series(
         self,
         *expected_series: str,
         **kwargs,
-    ) -> ManagedObject:
+    ) -> List[str]:
         """Assert exact supported series"""
 
         wanted = sorted(expected_series)
         got = sorted(self._get_supported_series())
         assert got == wanted, f"wanted={wanted}, got={got}"
+        return got
 
     def assert_count(
         self,
         min_count: int = 1,
-        max_count: int = None,
+        max_count: Optional[int] = None,
         **kwargs,
     ) -> List[Any]:
         """Assert a measurement count

@@ -185,9 +185,10 @@ class AssertInventory(AssertDevice):
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
         assert not compare_dataclass(mo.to_json().get(fragment), reference)
+        return mo
 
     def assert_child_device_count(
-        self, min_count: int = 1, max_count: int = None, **kwargs
+        self, min_count: int = 1, max_count: Optional[int] = None, **kwargs
     ) -> List[Dict[str, Any]]:
         """Assert that a device has a specific number of child devices"""
         response = self.context.client.get(
@@ -197,7 +198,7 @@ class AssertInventory(AssertDevice):
             },
         )
 
-        children = response.get("references")
+        children = response.get("references", [])
 
         if min_count is not None:
             assert (
@@ -220,7 +221,7 @@ class AssertInventory(AssertDevice):
         )
 
         children = []
-        for child in response.get("references"):
+        for child in response.get("references", []):
             child_mo = child.get("managedObject", {})
             if child_mo:
                 children.append(child_mo)
@@ -279,7 +280,7 @@ class AssertInventory(AssertDevice):
                 mo_id = mo.id
             return self.context.client.get(
                 f"/inventory/managedObjects/{mo_id}/{child_type}/{child_id}"
-            )
+            )  # type: ignore
         except KeyError as ex:
             raise InventoryNotFound from ex
 
@@ -379,7 +380,7 @@ class AssertInventory(AssertDevice):
             )
             children = [
                 ManagedObject.from_json(ref["managedObject"])
-                for ref in response.get("references")
+                for ref in response.get("references", [])
             ]
             return children
         except KeyError as ex:
@@ -454,6 +455,6 @@ class AssertInventory(AssertDevice):
             fragments = {}
 
         mo = ManagedObject(
-            self.context.client, type=type, name=name, owner=owner, **fragments
+            self.context.client, type=type, name=name, owner=owner, **fragments  # type: ignore
         ).create()
         return mo

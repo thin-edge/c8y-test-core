@@ -16,7 +16,9 @@ class Firmware:
     def __eq__(self, obj: object) -> bool:
         if isinstance(obj, Firmware):
             return compare_dataclass(self, obj)
-        return compare_dataclass(self, Firmware(**obj))
+        if isinstance(obj, dict):
+            return compare_dataclass(self, Firmware(**obj))
+        return False
 
 
 @dataclasses.dataclass
@@ -32,7 +34,9 @@ class Software:
     def __eq__(self, obj: object) -> bool:
         if isinstance(obj, Software):
             return compare_dataclass(self, obj)
-        return compare_dataclass(self, Software(**obj))
+        if isinstance(obj, dict):
+            return compare_dataclass(self, Software(**obj))
+        return False
 
     def to_dict(self) -> Dict[str, str]:
         """Return software item as a dictionary"""
