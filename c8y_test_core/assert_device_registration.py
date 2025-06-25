@@ -127,7 +127,7 @@ class AssertDeviceRegistration(AssertDevice):
         name: Optional[str] = None,
         device_type: Optional[str] = "thin-edge.io",
         **kwargs,
-    ) -> DeviceCredentials:
+    ) -> DeviceSimpleEnrollCredentials:
         """Bulk device registration using the Cumulocity
         certificate-authority feature
 
