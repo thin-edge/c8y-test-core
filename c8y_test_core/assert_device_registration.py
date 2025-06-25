@@ -14,6 +14,7 @@ import contextlib
 class DeviceCredentials:
     """Device credentials"""
 
+    url: str
     username: str
     password: str
 
@@ -22,6 +23,7 @@ class DeviceCredentials:
 class DeviceSimpleEnrollCredentials:
     """Device enrollment credentials for the Cumulocity certificate-authority feature"""
 
+    url: str
     external_id: str
     one_time_password: str
 
@@ -114,7 +116,9 @@ class AssertDeviceRegistration(AssertDevice):
         if self.context.client.tenant_id:
             username = f"{self.context.client.tenant_id}/device_{external_id}"
 
-        return DeviceCredentials(username, password)
+        return DeviceCredentials(
+            username=username, password=password, url=self.context.domain()
+        )
 
     def bulk_register_with_ca(
         self,
@@ -163,7 +167,11 @@ class AssertDeviceRegistration(AssertDevice):
             "Failed to register device\n" f"response:\n{resp}"
         )
 
-        return DeviceSimpleEnrollCredentials(external_id, one_time_password)
+        return DeviceSimpleEnrollCredentials(
+            external_id=external_id,
+            one_time_password=one_time_password,
+            url=self.context.domain(),
+        )
 
     def register_with_basic_auth(self, external_id: str, timeout: float = 60, **kwargs):
         """Register a single device using the basic auth
