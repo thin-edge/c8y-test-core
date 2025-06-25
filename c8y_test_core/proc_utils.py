@@ -12,7 +12,7 @@ class JsonReader:
     def __init__(self, proc: subprocess.Popen) -> None:
         self._proc = proc
 
-    def wait(self, timeout: float = None):
+    def wait(self, timeout: Optional[float] = None):
         """Wait for the process to finish
 
         Args:
@@ -31,6 +31,9 @@ class JsonReader:
         Returns:
             Optional[List[Any]]: List of objects created from each line of output
         """
+        if not self._proc.stdout:
+            return []
+
         if func:
             return [func(json.loads(line)) for line in self._proc.stdout]
         return [json.loads(line) for line in self._proc.stdout]

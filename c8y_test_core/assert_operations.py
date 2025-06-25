@@ -83,6 +83,6 @@ class AssertOperations:
         self.assert_count(
             min_count=0, max_count=0, device_id=device_id, status="PENDING", **kwargs
         )
-        self.assert_count(
+        return self.assert_count(
             min_count=0, max_count=0, device_id=device_id, status="EXECUTING", **kwargs
         )

@@ -40,22 +40,26 @@ class Binaries(AssertDevice):
             print(ref.binary.name)
         """
         with tempfile.TemporaryDirectory() as tmpdir:
+            source_file = None
             if file is None:
-                file = Path(tmpdir) / name
+                source_file = Path(tmpdir) / name
 
                 if isinstance(contents, str):
-                    Path(file).write_text(contents, encoding="utf8")
+                    Path(source_file).write_text(contents, encoding="utf8")
                 elif isinstance(contents, list):
-                    Path(file).write_text("\n".join(contents), encoding="utf8")
+                    Path(source_file).write_text("\n".join(contents), encoding="utf8")
+            else:
+                source_file = file
 
             binary = Binary(
                 self.context.client,
                 type=binary_type,
                 name=name,
-                file=str(file),
+                file=str(source_file),
                 **kwargs,
             ).create()
 
+            assert binary.id, "binary id is empty"
             binary_url = "/".join(
                 [
                     self.context.client.base_url.rstrip("/"),

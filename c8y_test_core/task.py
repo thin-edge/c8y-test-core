@@ -1,5 +1,5 @@
 """Task utilities"""
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 from c8y_api import CumulocityApi
 from c8y_test_core.timer import RepeatTimer
 
@@ -16,8 +16,8 @@ class BackgroundTask:
     def start(
         self,
         target: Callable[[], None],
-        args: List[Any] = None,
-        kwargs: Dict[str, Any] = None,
+        args: Optional[List[Any]] = None,
+        kwargs: Optional[Dict[str, Any]] = None,
         interval: float = 0.0,
         delay: float = 0.0,
         count: int = 0,
@@ -31,8 +31,8 @@ class BackgroundTask:
             count=count,
             delay=delay,
             target=target,
-            args=args,
-            kwargs=kwargs,
+            args=(args or []),
+            kwargs=(kwargs or {}),
         )
         timer.start()
         self._timers.append(timer)

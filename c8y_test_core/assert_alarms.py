@@ -1,6 +1,6 @@
 """Alarm assertions"""
 import re
-from typing import List
+from typing import List, Optional
 
 from c8y_api.model import Alarm
 
@@ -19,9 +19,9 @@ class Alarms(AssertDevice):
 
     def assert_count(
         self,
-        expected_text: str = None,
+        expected_text: Optional[str] = None,
         min_matches: int = 1,
-        max_matches: int = None,
+        max_matches: Optional[int] = None,
         **kwargs,
     ) -> List[Alarm]:
         """
