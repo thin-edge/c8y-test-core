@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Optional
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.utils import to_csv
+import contextlib
 
 
 @dataclass
@@ -145,6 +146,12 @@ class AssertDeviceRegistration(AssertDevice):
                 ("com_cumulocity_model_Agent.active", [True]),
             ]
         )
+
+        # Remove any existing request as you can't update existing credentials (ignore 404 errors)
+        with contextlib.suppress(KeyError):
+            self.context.client.delete(
+                f"/devicecontrol/bulkNewDeviceRequests/{external_id}"
+            )
 
         resp = self.context.client.post_file(
             "/devicecontrol/bulkNewDeviceRequests",
