@@ -186,8 +186,11 @@ class Events(AssertDevice):
             # Check if user provide the checksum as a file or not
             if Path(expected_md5).is_file():
                 reference_file = expected_md5
-                with open(reference_file) as file:
-                    expected_md5 = hashlib.md5(file.read()).hexdigest()
+                with open(reference_file, 'rb') as file:
+                    file_hash = hashlib.md5()
+                    while chunk := file.read(8192):
+                        file_hash.update(chunk)
+                    expected_md5 = file_hash.hexdigest()
 
             file_md5 = hashlib.md5(downloaded_file).hexdigest().lower()
             assert expected_md5.lower() == file_md5, (
