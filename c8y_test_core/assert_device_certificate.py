@@ -16,6 +16,7 @@ class AssertDeviceCertificate(AssertDevice):
         self,
         name: str,
         pem_cert: str,
+        auto_registration_enabled: bool = True,
         ignore_duplicate: bool = True,
         **kwargs,
     ) -> Optional[Dict[str, Any]]:
@@ -25,6 +26,8 @@ class AssertDeviceCertificate(AssertDevice):
             name (str): Name of the certificate
             pem_cert (str): Contents of a x509 certificate
                 in the PEM format. headers and whitespace will be stripped
+            auto_registration_enabled (bool, optional): Enable auto registration.
+                Defaults to True.
             ignore_duplicate (bool, optional): Ignore errors if the certificate
                 has already been uploaded. No response will be returned in this case.
 
@@ -43,6 +46,7 @@ class AssertDeviceCertificate(AssertDevice):
                 {
                     "name": name,
                     "status": "ENABLED",
+                    "autoRegistrationEnabled": auto_registration_enabled,
                     "certInPemFormat": contents,
                 },
             )
