@@ -72,10 +72,10 @@ class AssertDeviceRegistration(AssertDevice):
     def bulk_register_with_basic_auth(
         self,
         external_id: str,
-        external_type: Optional[str] = "c8y_Serial",
+        external_type: str = "c8y_Serial",
         name: Optional[str] = None,
-        device_type: Optional[str] = "thin-edge.io",
-        auth_type: Optional[str] = "BASIC",
+        device_type: str = "thin-edge.io",
+        auth_type: str = "BASIC",
         **kwargs,
     ) -> DeviceCredentials:
         """Bulk device registration for device that require
@@ -124,9 +124,9 @@ class AssertDeviceRegistration(AssertDevice):
     def bulk_register_with_ca(
         self,
         external_id: str,
-        external_type: Optional[str] = "c8y_Serial",
+        external_type: str = "c8y_Serial",
         name: Optional[str] = None,
-        device_type: Optional[str] = "thin-edge.io",
+        device_type: str = "thin-edge.io",
         **kwargs,
     ) -> DeviceSimpleEnrollCredentials:
         """Bulk device registration using the Cumulocity

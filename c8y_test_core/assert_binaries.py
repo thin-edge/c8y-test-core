@@ -26,10 +26,10 @@ class Binaries(AssertDevice):
     def new_binary(
         self,
         name: str,
-        binary_type: Optional[str] = "",
+        binary_type: str = "",
         file: Optional[str] = None,
         contents: Optional[Union[str, List]] = None,
-        delete: Optional[bool] = True,
+        delete: bool = True,
         **kwargs,
     ):
         """Upload a binary and provide it to a context. The binary will be automatically

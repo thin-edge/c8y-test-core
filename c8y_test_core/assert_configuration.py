@@ -88,7 +88,7 @@ class DeviceConfiguration(AssertDevice):
     def assert_supported_types(
         self,
         types: List[str],
-        includes: Optional[bool] = False,
+        includes: bool = False,
         mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> List[str]:

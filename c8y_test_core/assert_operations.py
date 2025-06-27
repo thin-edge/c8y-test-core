@@ -14,7 +14,7 @@ class AssertOperations:
 
     def assert_count(
         self,
-        min_count: Optional[int] = 1,
+        min_count: int = 1,
         max_count: Optional[int] = None,
         *,
         fragment: Optional[str] = None,
