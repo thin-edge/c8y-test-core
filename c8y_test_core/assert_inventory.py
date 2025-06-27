@@ -248,8 +248,8 @@ class AssertInventory(AssertDevice):
     def assert_relationship(
         self,
         child_identity: str,
-        child_identity_type: Optional[str] = "c8y_Serial",
-        child_type: Optional[str] = "childDevices",
+        child_identity_type: str = "c8y_Serial",
+        child_type: str = "childDevices",
         mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> List[Dict[str, Any]]:
@@ -287,7 +287,7 @@ class AssertInventory(AssertDevice):
     def delete_device_and_user(
         self,
         external_id: str,
-        external_type: Optional[str] = "c8y_Serial",
+        external_type: str = "c8y_Serial",
         **kwargs,
     ) -> None:
         """Assert device user and all child devices. The device user is then deleted afterwards"""
@@ -332,7 +332,7 @@ class AssertInventory(AssertDevice):
         status: Optional[str] = None,
         name: Optional[str] = None,
         query: Optional[str] = None,
-        page_size: Optional[int] = 100,
+        page_size: int = 100,
     ) -> List[ManagedObject]:
         """Get services attached to a specific device
 
@@ -390,7 +390,7 @@ class AssertInventory(AssertDevice):
     def assert_services(
         self,
         inventory_id: Optional[str] = None,
-        min_count: Optional[int] = 1,
+        min_count: int = 1,
         max_count: Optional[int] = None,
         service_type: Optional[str] = None,
         status: Optional[str] = None,

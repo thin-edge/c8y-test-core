@@ -14,7 +14,7 @@ class DeviceLogFile(AssertDevice):
     def assert_supported_types(
         self,
         *types: str,
-        include: Optional[bool] = True,
+        include: bool = True,
         mo: Optional[ManagedObject] = None,
         **kwargs,
     ) -> ManagedObject:
@@ -68,8 +68,8 @@ class DeviceLogFile(AssertDevice):
         type: str,
         date_from: Optional[datetime] = None,
         date_to: Optional[datetime] = None,
-        maximum_lines: Optional[int] = 100,
-        search_text: Optional[str] = "",
+        maximum_lines: int = 100,
+        search_text: str = "",
         **kwargs,
     ) -> AssertOperation:
         """Create a log file request operation c8y_LogfileRequest

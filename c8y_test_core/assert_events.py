@@ -23,7 +23,7 @@ class Events(AssertDevice):
     def assert_count(
         self,
         expected_text: Optional[str] = None,
-        min_matches: Optional[int] = 1,
+        min_matches: int = 1,
         max_matches: Optional[int] = None,
         with_attachment: Optional[bool] = None,
         **kwargs,
