@@ -1,6 +1,6 @@
 """Device logfile assertions"""
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import List, Optional
 from c8y_api.model import ManagedObject
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.assert_operation import AssertOperation
@@ -9,7 +9,7 @@ SUPPORTED_LOGFILE_TYPES = "c8y_SupportedLogs"
 
 
 class DeviceLogFile(AssertDevice):
-    """Device log file assertions"""
+    """Device log assertions"""
 
     def assert_supported_types(
         self,
@@ -17,11 +17,11 @@ class DeviceLogFile(AssertDevice):
         include: bool = True,
         mo: Optional[ManagedObject] = None,
         **kwargs,
-    ) -> ManagedObject:
-        """Assert presence of some supported log file types by checking the c8y_SupportedLogs
+    ) -> List[str]:
+        """Assert presence of some supported log types by checking the c8y_SupportedLogs
         fragment of the inventory managed object.
 
-        It will only check if the given supported log file types exist, other supported log file
+        It will only check if the given supported log types exist, other supported log
         types are allowed to also exist which are not included in the assertion.
 
         Args:
@@ -30,7 +30,7 @@ class DeviceLogFile(AssertDevice):
                 and don't fail if additional types are found
 
         Returns:
-            ManagedObject: Managed object
+            List[str]: List of supported log types
         """
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
@@ -38,7 +38,7 @@ class DeviceLogFile(AssertDevice):
 
         assert (
             SUPPORTED_LOGFILE_TYPES in mo_json
-        ), f"Supported log file types fragment is missing {SUPPORTED_LOGFILE_TYPES} from managed object"
+        ), f"Supported log types fragment is missing {SUPPORTED_LOGFILE_TYPES} from managed object"
         supported_types = mo_json.get(SUPPORTED_LOGFILE_TYPES, [])
 
         if include:
@@ -47,7 +47,7 @@ class DeviceLogFile(AssertDevice):
                 typeName for typeName in types if typeName not in supported_types
             ]
             assert len(missing) == 0, (
-                "c8y_SupportedLogs is missing expected types.\n"
+                f"{SUPPORTED_LOGFILE_TYPES} is missing expected types.\n"
                 f"missing={missing}\n"
                 f"got={supported_types}"
             )
@@ -56,12 +56,12 @@ class DeviceLogFile(AssertDevice):
             expected_types = sorted(types)
             actual_types = sorted(supported_types)
             assert actual_types == expected_types, (
-                "c8y_SupportedLogs does not match expected list.\n"
+                f"{SUPPORTED_LOGFILE_TYPES} does not match expected list.\n"
                 f"want={expected_types}\n"
                 f"got={actual_types}"
             )
 
-        return mo
+        return supported_types
 
     def get_logfile(
         self,
