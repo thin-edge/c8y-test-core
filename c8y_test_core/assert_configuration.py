@@ -87,15 +87,16 @@ class DeviceConfiguration(AssertDevice):
 
     def assert_supported_types(
         self,
-        types: List[str],
+        *types: str,
         includes: bool = False,
         mo: Optional[ManagedObject] = None,
         **kwargs,
-    ) -> List[str]:
+    ) -> ManagedObject:
         """Assert that the managed object has supported configuration
+        in the 'c8y_SupportedConfigurations' fragment.
 
         Args:
-            types (List[str]): List of expected configuration types
+            *types (*str): List of expected configuration types
             includes (boolean, optional): Only check if the list includes the given types. It only
                 checks if the given types are there and does not care about additional types.
                 Defaults to False
@@ -104,7 +105,7 @@ class DeviceConfiguration(AssertDevice):
                 context.
 
         Returns:
-            List[str]: List of the configuration types on the managed object
+            ManagedObject: Managed object
         """
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
@@ -131,4 +132,4 @@ class DeviceConfiguration(AssertDevice):
                 f"\ngot:    {sorted(supported_configs)}"
             )
 
-        return supported_configs
+        return mo
