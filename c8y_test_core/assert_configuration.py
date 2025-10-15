@@ -91,7 +91,7 @@ class DeviceConfiguration(AssertDevice):
         includes: bool = False,
         mo: Optional[ManagedObject] = None,
         **kwargs,
-    ) -> ManagedObject:
+    ) -> List[str]:
         """Assert that the managed object has supported configuration
         in the 'c8y_SupportedConfigurations' fragment.
 
@@ -105,7 +105,7 @@ class DeviceConfiguration(AssertDevice):
                 context.
 
         Returns:
-            ManagedObject: Managed object
+            List[str]: List of supported configuration types
         """
         if mo is None:
             mo = self.context.client.inventory.get(self.context.device_id)
@@ -132,4 +132,4 @@ class DeviceConfiguration(AssertDevice):
                 f"\ngot:    {sorted(supported_configs)}"
             )
 
-        return mo
+        return supported_configs

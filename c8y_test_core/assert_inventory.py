@@ -8,6 +8,8 @@ from c8y_test_core.compare import compare_dataclass
 from c8y_test_core.errors import FinalAssertionError
 
 
+SUPPORTED_OPERATIONS = "c8y_SupportedOperations"
+
 log = logging.getLogger()
 
 
@@ -55,9 +57,7 @@ class AssertInventory(AssertDevice):
         except KeyError:
             return
 
-    def assert_contains_supported_operations(
-        self, *types: str, **kwargs
-    ) -> ManagedObject:
+    def assert_contains_supported_operations(self, *types: str, **kwargs) -> List[str]:
         """Assert presence of some supported operations by checking the c8y_SupportedOperations
         fragment of the inventory managed object.
 
@@ -68,26 +68,23 @@ class AssertInventory(AssertDevice):
             *types (str): List of expected supported operations
 
         Returns:
-            ManagedObject: Managed object
+            List[str]: List of supported operations
         """
         mo = self.assert_contains_fragments(
-            ["c8y_SupportedOperations"], mo=kwargs.pop("mo", None)
+            [SUPPORTED_OPERATIONS], mo=kwargs.pop("mo", None)
         )
         mo_dict = mo.to_json()
+        supported_types = mo_dict.get(SUPPORTED_OPERATIONS, [])
 
-        missing = [
-            typeName
-            for typeName in types
-            if typeName not in mo_dict["c8y_SupportedOperations"]
-        ]
+        missing = [typeName for typeName in types if typeName not in supported_types]
         assert len(missing) == 0, (
-            "c8y_SupportedOperations is missing expected operations.\n"
+            f"{SUPPORTED_OPERATIONS} is missing expected operations.\n"
             f"missing={missing}\n"
-            f"got={mo_dict['c8y_SupportedOperations']}"
+            f"got={supported_types}"
         )
-        return mo
+        return supported_types
 
-    def assert_supported_operations(self, *types: str, **kwargs) -> ManagedObject:
+    def assert_supported_operations(self, *types: str, **kwargs) -> List[str]:
         """Assert exact supported operations by checking the c8y_SupportedOperations
         fragment of the inventory managed object.
 
@@ -95,18 +92,19 @@ class AssertInventory(AssertDevice):
             *types (str): List of expected supported operations
 
         Returns:
-            ManagedObject: Managed object
+            List[str]: List of supported operations
         """
         mo = self.assert_contains_fragments(
-            ["c8y_SupportedOperations"], mo=kwargs.pop("mo", None)
+            [SUPPORTED_OPERATIONS], mo=kwargs.pop("mo", None)
         )
         mo_dict = mo.to_json()
+        supported_types = mo_dict.get(SUPPORTED_OPERATIONS, [])
         sortedTypes = sorted(types)
-        actualTypes = sorted(mo_dict["c8y_SupportedOperations"])
+        actualTypes = sorted(supported_types)
         assert (
             sortedTypes == actualTypes
-        ), f"c8y_SupportedOperations does not match.\nexpected={sortedTypes}\ngot={actualTypes}"
-        return mo
+        ), f"{SUPPORTED_OPERATIONS} does not match.\nexpected={sortedTypes}\ngot={actualTypes}"
+        return supported_types
 
     def assert_contains_fragment_values(
         self,
