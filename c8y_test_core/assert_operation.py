@@ -23,7 +23,16 @@ class AssertOperation:
 
     def to_json(self) -> Dict[str, Any]:
         """Get operation as dictionary"""
-        return self.operation.to_json()
+        data = self.operation.to_json()
+        data["id"] = self.operation.id
+        return data
+
+    @property
+    def id(self) -> str:
+        """Get operation ID"""
+        if not self.operation.id:
+            raise ValueError("operation id is empty")
+        return self.operation.id
 
     def fetch_operation(self):
         """Refresh the operation by fetching it again from the platform"""
