@@ -45,6 +45,7 @@ class AssertMeasurements(AssertDevice):
         self,
         min_count: int = 1,
         max_count: Optional[int] = None,
+        sort_newest: bool = True,
         **kwargs,
     ) -> List[Any]:
         """Assert a measurement count
@@ -54,6 +55,11 @@ class AssertMeasurements(AssertDevice):
                 Ignored if set to None. Defaults to 1.
             max_count (int, optional): Maximum (inclusive) number of matches.
                 Ignored if set to None. Defaults to None.
+            sort_newest (bool): Sort the returned measurements by newest first.
+                It is enabled by default as the default sorting in Cumulocity is
+                dependent on whether legacy measurements or the new time series
+                measurements are being used. Doing client-side sorting ensures
+                consistent results across the two different measurement types.
 
         Returns:
             List[Any]: List of measurements
@@ -79,5 +85,14 @@ class AssertMeasurements(AssertDevice):
             assert total >= min_count
         elif min_count is None and max_count is not None:
             assert total <= max_count
+
+        if sort_newest:
+
+            def _sort_by_time(item):
+                if item and item.time:
+                    return item.datetime.timestamp()
+                return 0
+
+            measurements.sort(key=_sort_by_time, reverse=True)
 
         return measurements
