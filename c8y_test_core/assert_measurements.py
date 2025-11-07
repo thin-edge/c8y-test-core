@@ -1,8 +1,22 @@
 """Measurement assertions"""
 from typing import Any, List, Optional
 
+from c8y_api.model import Measurement
+
 from c8y_test_core.assert_device import AssertDevice
 from c8y_test_core.errors import FinalAssertionError
+
+
+def _sort_by_time(item: Measurement):
+    """Sort measurement by time
+
+    Args:
+        item (Measurement): measurement
+
+    Returns:
+        float: timestamp
+    """
+    return item.datetime.timestamp() or 0
 
 
 class AssertMeasurements(AssertDevice):
@@ -45,7 +59,7 @@ class AssertMeasurements(AssertDevice):
         self,
         min_count: int = 1,
         max_count: Optional[int] = None,
-        sort_newest: bool = True,
+        sort_newest: bool = False,
         **kwargs,
     ) -> List[Any]:
         """Assert a measurement count
@@ -55,11 +69,12 @@ class AssertMeasurements(AssertDevice):
                 Ignored if set to None. Defaults to 1.
             max_count (int, optional): Maximum (inclusive) number of matches.
                 Ignored if set to None. Defaults to None.
-            sort_newest (bool): Sort the returned measurements by newest first.
+            sort_newest (bool, optional): Sort the returned measurements by newest first.
                 It is enabled by default as the default sorting in Cumulocity is
                 dependent on whether legacy measurements or the new time series
                 measurements are being used. Doing client-side sorting ensures
                 consistent results across the two different measurement types.
+                Defaults to False.
 
         Returns:
             List[Any]: List of measurements
@@ -86,13 +101,7 @@ class AssertMeasurements(AssertDevice):
         elif min_count is None and max_count is not None:
             assert total <= max_count
 
-        if sort_newest:
-
-            def _sort_by_time(item):
-                if item and item.time:
-                    return item.datetime.timestamp()
-                return 0
-
-            measurements.sort(key=_sort_by_time, reverse=True)
+        # always sort results to normalize the order between legacy and time series measurements
+        measurements.sort(key=_sort_by_time, reverse=sort_newest)
 
         return measurements
