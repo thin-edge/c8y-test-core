@@ -63,6 +63,39 @@ class DeviceLogFile(AssertDevice):
 
         return supported_types
 
+    def assert_missing_supported_types(
+        self,
+        *types: str,
+        mo: Optional[ManagedObject] = None,
+        **kwargs,
+    ) -> List[str]:
+        """Assert the absence of supported log types by checking the c8y_SupportedLogs
+        fragment of the inventory managed object.
+
+        Args:
+            *types (str): List of supported operations that should not be present
+            mo (ManagedObject, optional): Managed object to check. Defaults to current device.
+
+        Returns:
+            List[str]: List of supported log types
+        """
+        if mo is None:
+            mo = self.context.client.inventory.get(self.context.device_id)
+        mo_json = mo.to_json()
+
+        assert (
+            SUPPORTED_LOGFILE_TYPES in mo_json
+        ), f"Supported log types fragment is missing {SUPPORTED_LOGFILE_TYPES} from managed object"
+        supported_types = mo_json.get(SUPPORTED_LOGFILE_TYPES, [])
+
+        found = [typeName for typeName in types if typeName in supported_types]
+        assert len(found) == 0, (
+            f"{SUPPORTED_LOGFILE_TYPES} is containing unexpected types.\n"
+            f"got={found}\n"
+            "expected=[]"
+        )
+        return supported_types
+
     def get_logfile(
         self,
         type: str,
