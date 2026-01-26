@@ -84,6 +84,35 @@ class AssertInventory(AssertDevice):
         )
         return supported_types
 
+    def assert_not_contains_supported_operations(
+        self, *types: str, **kwargs
+    ) -> List[str]:
+        """Assert the absence of some supported operations by checking the c8y_SupportedOperations
+        fragment of the inventory managed object.
+
+        It will only check if the given supported operations do not exist, other supported operations
+        are allowed to also exist which are not included in the assertion.
+
+        Args:
+            *types (str): List of supported operations that should not be present
+
+        Returns:
+            List[str]: List of supported operations
+        """
+        mo = self.assert_contains_fragments(
+            [SUPPORTED_OPERATIONS], mo=kwargs.pop("mo", None)
+        )
+        mo_dict = mo.to_json()
+        supported_types = mo_dict.get(SUPPORTED_OPERATIONS, [])
+
+        contains = [typeName for typeName in types if typeName in supported_types]
+        assert len(contains) == 0, (
+            f"{SUPPORTED_OPERATIONS} contains unexpected operations.\n"
+            f"contains={contains}\n"
+            f"got={supported_types}"
+        )
+        return supported_types
+
     def assert_supported_operations(self, *types: str, **kwargs) -> List[str]:
         """Assert exact supported operations by checking the c8y_SupportedOperations
         fragment of the inventory managed object.
