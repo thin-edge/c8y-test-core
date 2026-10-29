@@ -104,7 +104,10 @@ class CustomCumulocityApp(_CumulocityAppBase, CumulocityApi):
         auth = ""
         if "C8Y_PASSWORD" in os.environ:
             password = os.getenv("C8Y_PASSWORD", "")
-            auth = HTTPBasicAuth(username, password)
+            if tenant_id:
+                auth = HTTPBasicAuth(f"{tenant_id}/{username}", password)
+            else:
+                auth = HTTPBasicAuth(username, password)
         elif "C8Y_TOKEN" in os.environ:
             token = os.getenv("C8Y_TOKEN", "")
             auth = HTTPBearerAuth(token)
